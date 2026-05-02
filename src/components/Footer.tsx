@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Linkedin } from "lucide-react";
 
 export default function Footer() {
   return (
     <footer className="border-t border-border bg-background">
-      <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-5 gap-8">
         <div className="col-span-2 md:col-span-1">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-gradient-brand flex items-center justify-center shadow-glow">
@@ -15,14 +15,22 @@ export default function Footer() {
           <p className="text-sm text-muted-foreground mt-3 max-w-xs">
             The AI hiring operating system for modern startups and recruiters.
           </p>
+          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 mt-4 text-xs text-muted-foreground hover:text-foreground">
+            <Linkedin className="h-4 w-4" /> LinkedIn
+          </a>
         </div>
         <FooterCol title="Product" links={[
           { label: "JD Generator", to: "/app/jd-generator" },
           { label: "Talent Intelligence", to: "/app/talent-intelligence" },
-          { label: "Billing", to: "/app/billing" },
+          { label: "Pricing", to: "/#pricing" },
+          { label: "Use cases", to: "/#use-cases" },
+        ]} />
+        <FooterCol title="Resources" links={[
+          { label: "Blog", to: "/#blog" },
+          { label: "FAQ", to: "/#faq" },
         ]} />
         <FooterCol title="Company" links={[
-          { label: "About", to: "/" },
+          { label: "About", to: "/#product" },
           { label: "Contact", to: "mailto:hello@hireflow.ai" },
         ]} />
         <FooterCol title="Legal" links={[
