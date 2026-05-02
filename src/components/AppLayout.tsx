@@ -2,19 +2,19 @@ import { NavLink, Outlet } from "react-router-dom";
 import { FileText, Brain, CreditCard, Settings as SettingsIcon, Sparkles, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import Topbar from "./Topbar";
 
 const nav = [
-  { to: "/jd-generator", label: "JD Generator", icon: FileText },
-  { to: "/talent-intelligence", label: "Talent Intelligence", icon: Brain },
-  { to: "/billing", label: "Billing", icon: CreditCard },
-  { to: "/settings", label: "Settings", icon: SettingsIcon },
+  { to: "/app/jd-generator", label: "JD Generator", icon: FileText },
+  { to: "/app/talent-intelligence", label: "Talent Intelligence", icon: Brain },
+  { to: "/app/billing", label: "Billing", icon: CreditCard },
+  { to: "/app/settings", label: "Settings", icon: SettingsIcon },
 ];
 
 export default function AppLayout() {
   const [open, setOpen] = useState(false);
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      {/* Mobile topbar */}
       <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/80 backdrop-blur px-4 h-14">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-gradient-brand flex items-center justify-center shadow-glow">
@@ -28,14 +28,13 @@ export default function AppLayout() {
       </header>
 
       <div className="flex">
-        {/* Sidebar */}
         <aside
           className={cn(
             "fixed lg:sticky top-0 left-0 z-30 h-screen w-64 shrink-0 border-r border-border bg-background/60 backdrop-blur-xl transition-transform",
             open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
           )}
         >
-          <div className="hidden lg:flex items-center gap-2 px-6 h-16 border-b border-border">
+          <div className="hidden lg:flex items-center gap-2 px-6 h-14 border-b border-border">
             <div className="h-9 w-9 rounded-xl bg-gradient-brand flex items-center justify-center shadow-glow">
               <Sparkles className="h-5 w-5 text-brand-foreground" />
             </div>
@@ -77,8 +76,11 @@ export default function AppLayout() {
 
         {open && <div className="fixed inset-0 z-20 bg-foreground/20 lg:hidden" onClick={() => setOpen(false)} />}
 
-        <main className="flex-1 min-w-0">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-10 animate-fade-in">
+        <main className="flex-1 min-w-0 flex flex-col">
+          <div className="hidden lg:block">
+            <Topbar />
+          </div>
+          <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-10 animate-fade-in">
             <Outlet />
           </div>
         </main>
