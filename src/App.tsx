@@ -10,6 +10,10 @@ import JDGenerator from "./pages/JDGenerator";
 import TalentIntelligence from "./pages/TalentIntelligence";
 import Billing from "./pages/Billing";
 import Settings from "./pages/Settings";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { Navigate } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
@@ -21,12 +25,22 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route element={<AppLayout />}>
-            <Route path="/jd-generator" element={<JDGenerator />} />
-            <Route path="/talent-intelligence" element={<TalentIntelligence />} />
-            <Route path="/billing" element={<Billing />} />
-            <Route path="/settings" element={<Settings />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
+              <Route path="/app" element={<Navigate to="/app/jd-generator" replace />} />
+              <Route path="/app/jd-generator" element={<JDGenerator />} />
+              <Route path="/app/talent-intelligence" element={<TalentIntelligence />} />
+              <Route path="/app/billing" element={<Billing />} />
+              <Route path="/app/settings" element={<Settings />} />
+            </Route>
           </Route>
+          {/* Legacy redirects */}
+          <Route path="/jd-generator" element={<Navigate to="/app/jd-generator" replace />} />
+          <Route path="/talent-intelligence" element={<Navigate to="/app/talent-intelligence" replace />} />
+          <Route path="/billing" element={<Navigate to="/app/billing" replace />} />
+          <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
