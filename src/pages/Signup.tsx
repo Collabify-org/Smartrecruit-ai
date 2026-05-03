@@ -28,13 +28,13 @@ export default function Signup() {
           <div className="h-9 w-9 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
             <Sparkles className="h-5 w-5" />
           </div>
-          <span className="font-semibold">HireFlow AI</span>
+          <span className="font-semibold">SmartRecruit AI</span>
         </Link>
         <div>
           <h2 className="text-3xl font-semibold leading-tight max-w-sm">Hire 10× faster with an AI copilot built for recruiters.</h2>
           <p className="mt-3 opacity-80 text-sm">Free during beta. No credit card required.</p>
         </div>
-        <div className="text-xs opacity-70">© {new Date().getFullYear()} HireFlow AI</div>
+        <div className="text-xs opacity-70">© {new Date().getFullYear()} SmartRecruit AI</div>
       </div>
       <div className="flex items-center justify-center p-6">
         <form onSubmit={submit} className="w-full max-w-sm space-y-5 animate-fade-in">

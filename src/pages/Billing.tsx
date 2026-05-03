@@ -40,7 +40,7 @@ export default function Billing() {
   };
 
   const downloadInvoice = (inv: typeof INVOICES[number]) => {
-    const text = `HireFlow AI\nInvoice ${inv.id}\nDate: ${inv.date}\nAmount: ${inv.amount}\nStatus: ${inv.status}\n`;
+    const text = `SmartRecruit AI\nInvoice ${inv.id}\nDate: ${inv.date}\nAmount: ${inv.amount}\nStatus: ${inv.status}\n`;
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

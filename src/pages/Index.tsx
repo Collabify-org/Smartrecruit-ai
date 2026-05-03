@@ -29,7 +29,7 @@ export default function Index() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "HireFlow AI — AI Hiring Software, JD Generator & Talent Intelligence";
+    document.title = "SmartRecruit AI — AI Hiring Software, JD Generator & Talent Intelligence";
   }, []);
 
   return (
@@ -37,11 +37,11 @@ export default function Index() {
       {/* NAVBAR */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2" aria-label="HireFlow AI home">
+          <Link to="/" className="flex items-center gap-2" aria-label="SmartRecruit AI home">
             <div className="h-9 w-9 rounded-xl bg-gradient-brand flex items-center justify-center shadow-glow">
               <Sparkles className="h-5 w-5 text-brand-foreground" />
             </div>
-            <span className="font-semibold tracking-tight">HireFlow AI</span>
+            <span className="font-semibold tracking-tight">SmartRecruit AI</span>
           </Link>
           <nav className="hidden lg:flex items-center gap-7" aria-label="Primary">
             {NAV.map((n) => (
@@ -103,7 +103,7 @@ export default function Index() {
               Hire 10× faster with the <span className="bg-gradient-brand bg-clip-text text-transparent">AI hiring OS</span> built for startups
             </h1>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              HireFlow AI gives founders, recruiters and lean hiring teams two superpowers:
+              SmartRecruit AI gives founders, recruiters and lean hiring teams two superpowers:
               an <strong className="text-foreground font-medium">AI Job Description Generator</strong> that writes JDs in your own format,
               and a <strong className="text-foreground font-medium">Talent Intelligence Engine</strong> that decodes salaries, skills and sourcing in seconds.
             </p>
@@ -123,14 +123,14 @@ export default function Index() {
 
             {/* Hero product visual */}
             <div className="mt-14 mx-auto max-w-5xl">
-              <BrowserFrame title="app.hireflow.ai/jd-generator">
+              <BrowserFrame title="app.smartrecruit.ai/jd-generator">
                 <div className="grid md:grid-cols-5 gap-4 p-5 bg-gradient-subtle">
                   <div className="md:col-span-2 rounded-lg border border-border bg-card p-4">
                     <div className="text-xs font-semibold text-muted-foreground mb-3">JD INPUTS</div>
                     <MockField label="Role" value="Senior Product Engineer" />
                     <MockField label="Seniority" value="Senior · 5+ yrs" />
                     <MockField label="Location" value="Remote (EU)" />
-                    <MockField label="Mode" value="HireFlow Smart Format" />
+                    <MockField label="Mode" value="SmartRecruit Smart Format" />
                     <div className="mt-3 h-9 rounded-md bg-gradient-brand text-brand-foreground text-xs font-medium flex items-center justify-center shadow-glow">
                       ✨ Generate JD
                     </div>
@@ -185,11 +185,11 @@ export default function Index() {
             icon={FileText}
             title="Stop rewriting JDs from scratch."
             pain="Founders spend hours rewriting the same job descriptions in different formats. Recruiters copy-paste from old docs."
-            solution="Upload your company's JD template once. HireFlow learns your structure, tone and sections — and generates every future JD in the same format. Or use HireFlow's smart format mode."
+            solution="Upload your company's JD template once. SmartRecruit learns your structure, tone and sections — and generates every future JD in the same format. Or use SmartRecruit's smart format mode."
             bullets={[
               "Upload your company JD template once",
               "Generate future JDs in your exact format",
-              "HireFlow Smart Format mode (best practices)",
+              "SmartRecruit Smart Format mode (best practices)",
               "Export to editable Word (.docx)",
             ]}
             visual={
@@ -222,7 +222,7 @@ export default function Index() {
             icon={Brain}
             title="Decode the talent market in seconds."
             pain="You're hiring blind: no idea what to pay, who else is hiring, or which keywords actually surface candidates."
-            solution="Drop in any JD. HireFlow returns salary benchmarks, similar companies hiring the same role, trending skills, Boolean sourcing strings and a recommended hiring strategy."
+            solution="Drop in any JD. SmartRecruit returns salary benchmarks, similar companies hiring the same role, trending skills, Boolean sourcing strings and a recommended hiring strategy."
             bullets={[
               "Salary benchmarks by role, level and region",
               "Similar companies hiring the same role",
@@ -264,7 +264,7 @@ export default function Index() {
           <SectionHeader eyebrow="Loved by hiring teams" title="What founders and recruiters say" />
           <div className="grid md:grid-cols-3 gap-5 mt-10">
             <Testimonial
-              quote="We replaced three hiring tools with HireFlow. Our JDs went from 4 hours to 4 minutes."
+              quote="We replaced three hiring tools with SmartRecruit. Our JDs went from 4 hours to 4 minutes."
               name="Sara Linde"
               role="Head of Talent, Northwind"
             />
@@ -306,15 +306,15 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-5 mt-10">
             <AnswerCard
               h="What is talent intelligence software?"
-              p="Talent intelligence software analyzes labor market data — salaries, skills, hiring trends and competitor activity — to help recruiters make better hiring decisions. HireFlow turns any job description into an instant market briefing."
+              p="Talent intelligence software analyzes labor market data — salaries, skills, hiring trends and competitor activity — to help recruiters make better hiring decisions. SmartRecruit turns any job description into an instant market briefing."
             />
             <AnswerCard
               h="How can AI help hiring teams?"
-              p="AI removes the busywork: writing JDs, benchmarking salaries, and generating sourcing keywords. HireFlow combines an AI JD generator with a talent intelligence engine so small teams can hire like a 10-person recruiting org."
+              p="AI removes the busywork: writing JDs, benchmarking salaries, and generating sourcing keywords. SmartRecruit combines an AI JD generator with a talent intelligence engine so small teams can hire like a 10-person recruiting org."
             />
             <AnswerCard
               h="How do I create a job description with AI?"
-              p="Upload your company's JD template (or use HireFlow's smart format), enter the role, seniority and location, then generate. You'll get a structured, on-brand JD ready to export to Word in under 60 seconds."
+              p="Upload your company's JD template (or use SmartRecruit's smart format), enter the role, seniority and location, then generate. You'll get a structured, on-brand JD ready to export to Word in under 60 seconds."
             />
           </div>
         </section>
@@ -335,8 +335,8 @@ export default function Index() {
         <section id="faq" className="max-w-3xl mx-auto px-6 py-24">
           <SectionHeader eyebrow="FAQ" title="Frequently asked questions" />
           <Accordion type="single" collapsible className="mt-8">
-            <FaqItem q="How does the JD Generator work?" a="Pick a mode: upload your company JD template (we replicate its structure) or use HireFlow Smart Format. Enter the role, seniority and location and we generate a polished JD you can edit, copy or export as .docx." />
-            <FaqItem q="Can I upload my own template?" a="Yes. Upload a Word doc once and HireFlow will mirror its sections, tone and headings on every future JD generation." />
+            <FaqItem q="How does the JD Generator work?" a="Pick a mode: upload your company JD template (we replicate its structure) or use SmartRecruit Smart Format. Enter the role, seniority and location and we generate a polished JD you can edit, copy or export as .docx." />
+            <FaqItem q="Can I upload my own template?" a="Yes. Upload a Word doc once and SmartRecruit will mirror its sections, tone and headings on every future JD generation." />
             <FaqItem q="How accurate are the salary insights?" a="We aggregate market signals across thousands of public job posts and benchmarks, then localize by region and seniority. Most teams find our bands within 5–8% of their offers." />
             <FaqItem q="Is there a free trial?" a="Yes — every paid plan includes a 14-day free trial. No credit card required to start, and you can cancel anytime." />
             <FaqItem q="Do you support agencies?" a="Absolutely. The Team and Enterprise plans support multi-client workspaces, so agencies can run intelligence reports per brief." />
@@ -351,7 +351,7 @@ export default function Index() {
               <h2 className="text-3xl font-semibold tracking-tight">Book a demo or join the waitlist</h2>
               <p className="mt-3 text-muted-foreground">Get a personalized walkthrough, or be the first to hear about new features. We reply within 2 hours on weekdays.</p>
               <div className="mt-6 space-y-3 text-sm">
-                <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-brand" /> hello@hireflow.ai</div>
+                <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-brand" /> hello@smartrecruit.ai</div>
                 <div className="flex items-center gap-2"><Headphones className="h-4 w-4 text-brand" /> Avg. reply: under 2 hours</div>
                 <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-brand" /> GDPR-compliant data handling</div>
               </div>
@@ -369,7 +369,7 @@ export default function Index() {
         <section className="max-w-6xl mx-auto px-6 pb-24">
           <div className="rounded-2xl bg-gradient-brand text-brand-foreground p-10 text-center shadow-glow">
             <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">Ready to hire smarter?</h2>
-            <p className="mt-2 opacity-90 max-w-xl mx-auto text-sm sm:text-base">Join hundreds of teams using HireFlow AI to ship roles faster.</p>
+            <p className="mt-2 opacity-90 max-w-xl mx-auto text-sm sm:text-base">Join hundreds of teams using SmartRecruit AI to ship roles faster.</p>
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to={primaryCta}>
                 <Button size="lg" className="bg-background text-foreground hover:bg-background/90">
