@@ -444,7 +444,7 @@ function FeatureBlock({
 
 function UseCase({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-background p-6 shadow-soft-sm hover:shadow-soft-lg transition-shadow">
+    <div className="rounded-2xl border border-border bg-background p-6 shadow-soft-sm hover-lift">
       <div className="h-10 w-10 rounded-xl bg-accent text-accent-foreground flex items-center justify-center mb-4">
         <Icon className="h-5 w-5" />
       </div>
@@ -522,7 +522,7 @@ function AnswerCard({ h, p }: { h: string; p: string }) {
 
 function BlogCard({ category, title, excerpt }: { category: string; title: string; excerpt: string }) {
   return (
-    <article className="rounded-2xl border border-border bg-background overflow-hidden shadow-soft-sm hover:shadow-soft-lg transition-shadow">
+    <article className="rounded-2xl border border-border bg-background overflow-hidden shadow-soft-sm hover-lift">
       <div className="h-32 bg-gradient-brand relative">
         <BookOpen className="h-6 w-6 text-brand-foreground absolute bottom-3 left-4 opacity-80" />
       </div>
