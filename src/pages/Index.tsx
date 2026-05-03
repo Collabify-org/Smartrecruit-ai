@@ -13,9 +13,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { toast } from "@/hooks/use-toast";
 import Footer from "@/components/Footer";
 import { isAuthed } from "@/lib/auth";
+import HeroProductPreview from "@/components/demos/HeroProductPreview";
+import ProductDemos from "@/components/demos/ProductDemos";
 
 const NAV = [
   { label: "Product", href: "#product" },
+  { label: "Demos", href: "#demos" },
   { label: "Pricing", href: "#pricing" },
   { label: "Use Cases", href: "#use-cases" },
   { label: "Blog", href: "#blog" },
@@ -122,40 +125,14 @@ export default function Index() {
             <p className="mt-4 text-xs text-muted-foreground">No credit card required · 2-minute setup · Cancel anytime</p>
 
             {/* Hero product visual */}
-            <div className="mt-14 mx-auto max-w-5xl">
-              <BrowserFrame title="app.smartrecruit.ai/jd-generator">
-                <div className="grid md:grid-cols-5 gap-4 p-5 bg-gradient-subtle">
-                  <div className="md:col-span-2 rounded-lg border border-border bg-card p-4">
-                    <div className="text-xs font-semibold text-muted-foreground mb-3">JD INPUTS</div>
-                    <MockField label="Role" value="Senior Product Engineer" />
-                    <MockField label="Seniority" value="Senior · 5+ yrs" />
-                    <MockField label="Location" value="Remote (EU)" />
-                    <MockField label="Mode" value="SmartRecruit Smart Format" />
-                    <div className="mt-3 h-9 rounded-md bg-gradient-brand text-brand-foreground text-xs font-medium flex items-center justify-center shadow-glow">
-                      ✨ Generate JD
-                    </div>
-                  </div>
-                  <div className="md:col-span-3 rounded-lg border border-border bg-card p-4 text-left">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-xs font-semibold text-muted-foreground">PREVIEW</div>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-success/10 text-success">Ready · .docx</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="h-3 w-2/3 rounded bg-secondary" />
-                      <div className="h-2 w-full rounded bg-secondary/70" />
-                      <div className="h-2 w-11/12 rounded bg-secondary/70" />
-                      <div className="h-2 w-9/12 rounded bg-secondary/70" />
-                      <div className="h-3 w-1/3 rounded bg-secondary mt-4" />
-                      <div className="h-2 w-full rounded bg-secondary/70" />
-                      <div className="h-2 w-10/12 rounded bg-secondary/70" />
-                      <div className="h-2 w-8/12 rounded bg-secondary/70" />
-                    </div>
-                  </div>
-                </div>
-              </BrowserFrame>
+            <div className="mt-14 mx-auto max-w-5xl px-1 sm:px-0">
+              <HeroProductPreview />
             </div>
           </div>
         </section>
+
+        {/* PRODUCT DEMOS (3 looping) */}
+        <ProductDemos />
 
         {/* LOGO STRIP */}
         <section aria-label="Trusted by" className="border-y border-border bg-card">
