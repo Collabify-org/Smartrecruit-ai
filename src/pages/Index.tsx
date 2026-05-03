@@ -96,14 +96,16 @@ export default function Index() {
         {/* HERO */}
         <section className="relative overflow-hidden">
           <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-subtle" />
-          <div aria-hidden className="absolute -top-32 left-1/2 -translate-x-1/2 h-[480px] w-[900px] rounded-full bg-brand/10 blur-3xl -z-10" />
+          <div aria-hidden className="absolute inset-0 -z-10 bg-spotlight" />
+          <div aria-hidden className="absolute inset-0 -z-10 opacity-[0.4] bg-dot-grid [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_70%)]" />
+          <div aria-hidden className="absolute -top-32 left-1/2 -translate-x-1/2 h-[480px] w-[900px] rounded-full bg-brand/10 blur-3xl -z-10 animate-pulse-glow" />
           <div className="max-w-6xl mx-auto px-6 pt-20 pb-16 text-center animate-fade-in">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-background text-xs text-muted-foreground mb-6 shadow-soft-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
               New: Talent Intelligence Engine v2 — live now
             </div>
             <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-foreground max-w-4xl mx-auto leading-[1.05]">
-              Hire 10× faster with the <span className="bg-gradient-brand bg-clip-text text-transparent">AI hiring OS</span> built for startups
+              Hire 10× faster with the <span className="text-gradient-brand">AI hiring OS</span> built for startups
             </h1>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
               SmartRecruit AI gives founders, recruiters and lean hiring teams two superpowers:
@@ -442,7 +444,7 @@ function FeatureBlock({
 
 function UseCase({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-background p-6 shadow-soft-sm hover:shadow-soft-lg transition-shadow">
+    <div className="rounded-2xl border border-border bg-background p-6 shadow-soft-sm hover-lift">
       <div className="h-10 w-10 rounded-xl bg-accent text-accent-foreground flex items-center justify-center mb-4">
         <Icon className="h-5 w-5" />
       </div>
@@ -520,7 +522,7 @@ function AnswerCard({ h, p }: { h: string; p: string }) {
 
 function BlogCard({ category, title, excerpt }: { category: string; title: string; excerpt: string }) {
   return (
-    <article className="rounded-2xl border border-border bg-background overflow-hidden shadow-soft-sm hover:shadow-soft-lg transition-shadow">
+    <article className="rounded-2xl border border-border bg-background overflow-hidden shadow-soft-sm hover-lift">
       <div className="h-32 bg-gradient-brand relative">
         <BookOpen className="h-6 w-6 text-brand-foreground absolute bottom-3 left-4 opacity-80" />
       </div>
