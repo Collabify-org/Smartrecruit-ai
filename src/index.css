@@ -108,5 +108,50 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: hsl(var(--brand) / 0.18);
+    color: hsl(var(--foreground));
+  }
+}
+
+@layer utilities {
+  /* Animated brand gradient text */
+  .text-gradient-brand {
+    background-image: linear-gradient(
+      120deg,
+      hsl(var(--brand)) 0%,
+      hsl(var(--brand-glow)) 50%,
+      hsl(var(--brand)) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-shift 6s ease-in-out infinite;
+  }
+
+  /* Soft radial spotlight */
+  .bg-spotlight {
+    background:
+      radial-gradient(60% 50% at 50% 0%, hsl(var(--brand) / 0.10), transparent 70%),
+      radial-gradient(40% 40% at 80% 30%, hsl(var(--brand-glow) / 0.08), transparent 70%);
+  }
+
+  /* Subtle dot grid backdrop */
+  .bg-dot-grid {
+    background-image: radial-gradient(hsl(var(--foreground) / 0.07) 1px, transparent 1px);
+    background-size: 22px 22px;
+    background-position: 0 0;
+  }
+
+  /* Hover lift */
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft-lg;
   }
 }
