@@ -20,7 +20,7 @@ export default function AppLayout() {
           <div className="h-8 w-8 rounded-lg bg-gradient-brand flex items-center justify-center shadow-glow">
             <Sparkles className="h-4 w-4 text-brand-foreground" />
           </div>
-          <span className="font-semibold tracking-tight">HireFlow AI</span>
+          <span className="font-semibold tracking-tight">SmartRecruit AI</span>
         </div>
         <button onClick={() => setOpen(!open)} className="p-2 rounded-md hover:bg-secondary">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -39,7 +39,7 @@ export default function AppLayout() {
               <Sparkles className="h-5 w-5 text-brand-foreground" />
             </div>
             <div>
-              <div className="font-semibold tracking-tight leading-none">HireFlow AI</div>
+              <div className="font-semibold tracking-tight leading-none">SmartRecruit AI</div>
               <div className="text-[11px] text-muted-foreground mt-1">Hiring OS</div>
             </div>
           </div>

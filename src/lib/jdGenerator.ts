@@ -6,7 +6,7 @@ export interface JDInput {
   workMode: string;
 }
 
-export function generateHireFlowJD(i: JDInput): string {
+export function generateSmartRecruitJD(i: JDInput): string {
   const skills = i.skills.split(",").map((s) => s.trim()).filter(Boolean);
   const expNum = parseInt(i.experience) || 0;
   const seniority = expNum >= 8 ? "Senior" : expNum >= 4 ? "Mid-level" : "Junior";

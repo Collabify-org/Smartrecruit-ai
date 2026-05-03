@@ -1,4 +1,4 @@
-const PREFIX = "hireflow:";
+const PREFIX = "smartrecruit:";
 
 export function lsGet<T>(key: string, fallback: T): T {
   try {

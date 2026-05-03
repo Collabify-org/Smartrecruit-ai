@@ -10,11 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Copy, Download, Sparkles, Upload, FileText, Loader2, CheckCheck } from "lucide-react";
 import { exportMarkdownToDocx } from "@/lib/docxExport";
-import { generateHireFlowJD, fillTemplate, type JDInput } from "@/lib/jdGenerator";
+import { generateSmartRecruitJD, fillTemplate, type JDInput } from "@/lib/jdGenerator";
 import { lsGet, lsSet } from "@/lib/storage";
 
 export default function JDGenerator() {
-  const [mode, setMode] = useState<"hireflow" | "template">("hireflow");
+  const [mode, setMode] = useState<"smartrecruit" | "template">("smartrecruit");
   const [template, setTemplate] = useState(() => lsGet<string>("template", ""));
   const [input, setInput] = useState<JDInput>({ role: "", experience: "", skills: "", company: "", workMode: "Remote" });
   const [output, setOutput] = useState("");
@@ -43,7 +43,7 @@ export default function JDGenerator() {
     }
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1100));
-    const result = mode === "hireflow" ? generateHireFlowJD(input) : fillTemplate(template, input);
+    const result = mode === "smartrecruit" ? generateSmartRecruitJD(input) : fillTemplate(template, input);
     setOutput(result);
     setLoading(false);
     toast.success("JD generated");
@@ -64,11 +64,11 @@ export default function JDGenerator() {
 
   return (
     <>
-      <PageHeader title="JD Generator" description="Create polished job descriptions with your template or HireFlow's structured format. Export as .docx." />
+      <PageHeader title="JD Generator" description="Create polished job descriptions with your template or SmartRecruit's structured format. Export as .docx." />
 
       <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="mb-6">
         <TabsList className="bg-secondary">
-          <TabsTrigger value="hireflow" className="gap-2"><Sparkles className="h-4 w-4" />HireFlow Format</TabsTrigger>
+          <TabsTrigger value="smartrecruit" className="gap-2"><Sparkles className="h-4 w-4" />SmartRecruit Format</TabsTrigger>
           <TabsTrigger value="template" className="gap-2"><FileText className="h-4 w-4" />Company Template</TabsTrigger>
         </TabsList>
 
