@@ -478,8 +478,8 @@ function TrustBadge({ icon: Icon, title, desc }: { icon: any; title: string; des
   );
 }
 
-function PriceCard({ name, price, period, desc, features, cta, to, highlight }: {
-  name: string; price: string; period: string; desc: string; features: string[]; cta: string; to: string; highlight?: boolean;
+function PriceCard({ name, price, period, desc, features, cta, to, highlight, subPrice }: {
+  name: string; price: string; period: string; desc: string; features: string[]; cta: string; to: string; highlight?: boolean; subPrice?: string;
 }) {
   const inner = (
     <div className={`relative rounded-2xl border p-6 h-full flex flex-col ${highlight ? "border-brand bg-background shadow-glow" : "border-border bg-background shadow-soft-sm"}`}>
@@ -489,6 +489,7 @@ function PriceCard({ name, price, period, desc, features, cta, to, highlight }: 
         <span className="text-3xl font-semibold tracking-tight">{price}</span>
         {period && <span className="text-xs text-muted-foreground">{period}</span>}
       </div>
+      {subPrice && <p className="text-[11px] text-muted-foreground mt-1">{subPrice}</p>}
       <p className="text-xs text-muted-foreground mt-2">{desc}</p>
       <ul className="mt-5 space-y-2 flex-1">
         {features.map((f) => (
