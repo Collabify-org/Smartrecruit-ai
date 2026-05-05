@@ -506,6 +506,93 @@ function PriceCard({ name, price, period, desc, features, cta, to, highlight }: 
   return to.startsWith("#") ? <a href={to} className="contents">{inner}</a> : <Link to={to} className="contents">{inner}</Link>;
 }
 
+function PricingPlans({ primaryCta }: { primaryCta: string }) {
+  const [currency, setCurrency] = useState<"INR" | "USD">("USD");
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("https://ipapi.co/json/")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (cancelled || !data) return;
+        if (data.country_code === "IN") setCurrency("INR");
+      })
+      .catch(() => { /* silent fallback to USD */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  const fmt = (inr: string, usd: string) => (currency === "INR" ? inr : usd);
+
+  return (
+    <>
+      <div className="grid md:grid-cols-3 gap-5 mt-12">
+        <PriceCard
+          name="Starter"
+          price={fmt("₹999", "$49")}
+          period="/ month"
+          desc="For individual recruiters and small HR teams"
+          features={[
+            "10 JD generations per month",
+            "10 Talent Intelligence analyses per month",
+            "10 Interview question sets per month",
+            "SmartRecruit format JD",
+            "Download as .docx",
+            "1 user seat",
+            "Email support",
+            "3-day free trial",
+          ]}
+          cta="Start free trial"
+          to={primaryCta}
+        />
+        <PriceCard
+          highlight
+          name="Professional"
+          price={fmt("₹2,999", "$99")}
+          period="/ month"
+          desc="For growing companies and active hiring teams"
+          features={[
+            "50 JD generations per month",
+            "50 Talent Intelligence analyses per month",
+            "50 Interview question sets per month",
+            "SmartRecruit format + Company template upload",
+            "Download as .docx",
+            "3 user seats",
+            "Full salary intelligence",
+            "Priority email support",
+            "3-day free trial",
+          ]}
+          cta="Start free trial"
+          to={primaryCta}
+        />
+        <PriceCard
+          name="Agency / Enterprise"
+          price={fmt("₹7,999", "$249")}
+          period="/ month"
+          subPrice="Custom pricing available for large teams"
+          desc="For agencies and enterprises with high-volume hiring"
+          features={[
+            "Unlimited JD generations",
+            "Unlimited Talent Intelligence analyses",
+            "Unlimited Interview question sets",
+            "Unlimited user seats",
+            "Company template upload",
+            "White label option",
+            "API access",
+            "Dedicated account manager",
+            "Custom onboarding",
+            "3-day free trial",
+          ]}
+          cta="Contact sales"
+          to="#contact"
+        />
+      </div>
+      <p className="mt-8 text-center text-xs text-muted-foreground">
+        All plans include a 3-day free trial · Payments secured by Cashfree · Cancel anytime
+      </p>
+    </>
+  );
+}
+
 function AnswerCard({ h, p }: { h: string; p: string }) {
   return (
     <article className="rounded-2xl border border-border bg-card p-6 shadow-soft-sm">
