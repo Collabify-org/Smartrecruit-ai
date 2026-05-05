@@ -269,13 +269,8 @@ export default function Index() {
         {/* PRICING */}
         <section id="pricing" className="border-t border-border bg-card">
           <div className="max-w-6xl mx-auto px-6 py-24">
-            <SectionHeader eyebrow="Pricing" title="Simple, transparent pricing" subtitle="Start free. Upgrade as you hire." />
-            <div className="grid md:grid-cols-4 gap-5 mt-12">
-              <PriceCard name="Starter" price="$0" period="forever" desc="For solo founders making first hires" features={["3 JDs / month", "5 talent reports / month", "Word export", "Community support"]} cta="Start free" to={primaryCta} />
-              <PriceCard highlight name="Growth" price="$29" period="/ month" desc="For startups hiring actively" features={["50 JDs / month", "Unlimited talent reports", "Custom JD templates", "Priority email support"]} cta="Start free trial" to={primaryCta} />
-              <PriceCard name="Team" price="$79" period="/ month" desc="For lean recruiting teams" features={["Unlimited JDs", "Team workspace (5 seats)", "Advanced market data", "Dedicated success manager"]} cta="Start free trial" to={primaryCta} />
-              <PriceCard name="Enterprise" price="Custom" period="" desc="For agencies and scale-ups" features={["Unlimited everything", "SSO & advanced security", "Custom integrations", "SLA & onboarding"]} cta="Contact sales" to="#contact" />
-            </div>
+            <SectionHeader eyebrow="Pricing" title="Simple, transparent pricing" subtitle="Start with a 3-day free trial. No credit card required." />
+            <PricingPlans primaryCta={primaryCta} />
           </div>
         </section>
 
@@ -483,8 +478,8 @@ function TrustBadge({ icon: Icon, title, desc }: { icon: any; title: string; des
   );
 }
 
-function PriceCard({ name, price, period, desc, features, cta, to, highlight }: {
-  name: string; price: string; period: string; desc: string; features: string[]; cta: string; to: string; highlight?: boolean;
+function PriceCard({ name, price, period, desc, features, cta, to, highlight, subPrice }: {
+  name: string; price: string; period: string; desc: string; features: string[]; cta: string; to: string; highlight?: boolean; subPrice?: string;
 }) {
   const inner = (
     <div className={`relative rounded-2xl border p-6 h-full flex flex-col ${highlight ? "border-brand bg-background shadow-glow" : "border-border bg-background shadow-soft-sm"}`}>
@@ -494,6 +489,7 @@ function PriceCard({ name, price, period, desc, features, cta, to, highlight }: 
         <span className="text-3xl font-semibold tracking-tight">{price}</span>
         {period && <span className="text-xs text-muted-foreground">{period}</span>}
       </div>
+      {subPrice && <p className="text-[11px] text-muted-foreground mt-1">{subPrice}</p>}
       <p className="text-xs text-muted-foreground mt-2">{desc}</p>
       <ul className="mt-5 space-y-2 flex-1">
         {features.map((f) => (
@@ -509,6 +505,93 @@ function PriceCard({ name, price, period, desc, features, cta, to, highlight }: 
     </div>
   );
   return to.startsWith("#") ? <a href={to} className="contents">{inner}</a> : <Link to={to} className="contents">{inner}</Link>;
+}
+
+function PricingPlans({ primaryCta }: { primaryCta: string }) {
+  const [currency, setCurrency] = useState<"INR" | "USD">("USD");
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("https://ipapi.co/json/")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (cancelled || !data) return;
+        if (data.country_code === "IN") setCurrency("INR");
+      })
+      .catch(() => { /* silent fallback to USD */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  const fmt = (inr: string, usd: string) => (currency === "INR" ? inr : usd);
+
+  return (
+    <>
+      <div className="grid md:grid-cols-3 gap-5 mt-12">
+        <PriceCard
+          name="Starter"
+          price={fmt("₹999", "$49")}
+          period="/ month"
+          desc="For individual recruiters and small HR teams"
+          features={[
+            "10 JD generations per month",
+            "10 Talent Intelligence analyses per month",
+            "10 Interview question sets per month",
+            "SmartRecruit format JD",
+            "Download as .docx",
+            "1 user seat",
+            "Email support",
+            "3-day free trial",
+          ]}
+          cta="Start free trial"
+          to={primaryCta}
+        />
+        <PriceCard
+          highlight
+          name="Professional"
+          price={fmt("₹2,999", "$99")}
+          period="/ month"
+          desc="For growing companies and active hiring teams"
+          features={[
+            "50 JD generations per month",
+            "50 Talent Intelligence analyses per month",
+            "50 Interview question sets per month",
+            "SmartRecruit format + Company template upload",
+            "Download as .docx",
+            "3 user seats",
+            "Full salary intelligence",
+            "Priority email support",
+            "3-day free trial",
+          ]}
+          cta="Start free trial"
+          to={primaryCta}
+        />
+        <PriceCard
+          name="Agency / Enterprise"
+          price={fmt("₹7,999", "$249")}
+          period="/ month"
+          subPrice="Custom pricing available for large teams"
+          desc="For agencies and enterprises with high-volume hiring"
+          features={[
+            "Unlimited JD generations",
+            "Unlimited Talent Intelligence analyses",
+            "Unlimited Interview question sets",
+            "Unlimited user seats",
+            "Company template upload",
+            "White label option",
+            "API access",
+            "Dedicated account manager",
+            "Custom onboarding",
+            "3-day free trial",
+          ]}
+          cta="Contact sales"
+          to="#contact"
+        />
+      </div>
+      <p className="mt-8 text-center text-xs text-muted-foreground">
+        All plans include a 3-day free trial · Payments secured by Cashfree · Cancel anytime
+      </p>
+    </>
+  );
 }
 
 function AnswerCard({ h, p }: { h: string; p: string }) {
