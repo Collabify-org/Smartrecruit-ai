@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { FileText, Brain, CreditCard, Settings as SettingsIcon, Sparkles, Menu, X } from "lucide-react";
+import { FileText, Brain, CreditCard, Settings as SettingsIcon, Sparkles, Menu, X, Mic } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Topbar from "./Topbar";
@@ -7,6 +7,7 @@ import Topbar from "./Topbar";
 const nav = [
   { to: "/app/jd-generator", label: "JD Generator", icon: FileText },
   { to: "/app/talent-intelligence", label: "Talent Intelligence", icon: Brain },
+  { to: "/app/interview-questions", label: "Interview Questions", icon: Mic },
   { to: "/app/billing", label: "Billing", icon: CreditCard },
   { to: "/app/settings", label: "Settings", icon: SettingsIcon },
 ];
