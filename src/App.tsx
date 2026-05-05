@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound.tsx";
 import AppLayout from "./components/AppLayout";
 import JDGenerator from "./pages/JDGenerator";
 import TalentIntelligence from "./pages/TalentIntelligence";
+import InterviewQuestions from "./pages/InterviewQuestions";
 import Billing from "./pages/Billing";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/app" element={<Navigate to="/app/jd-generator" replace />} />
               <Route path="/app/jd-generator" element={<JDGenerator />} />
               <Route path="/app/talent-intelligence" element={<TalentIntelligence />} />
+              <Route path="/app/interview-questions" element={<InterviewQuestions />} />
               <Route path="/app/billing" element={<Billing />} />
               <Route path="/app/settings" element={<Settings />} />
             </Route>
