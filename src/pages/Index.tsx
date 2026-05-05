@@ -567,9 +567,9 @@ function PricingPlans({ primaryCta }: { primaryCta: string }) {
         />
         <PriceCard
           name="Agency / Enterprise"
-          price={fmt("₹7,999", "$249")}
-          period="/ month"
-          subPrice="Custom pricing available for large teams"
+          price="Custom Pricing"
+          period=""
+          subPrice="Tailored to your team size and needs"
           desc="For agencies and enterprises with high-volume hiring"
           features={[
             "Unlimited JD generations",
