@@ -269,13 +269,8 @@ export default function Index() {
         {/* PRICING */}
         <section id="pricing" className="border-t border-border bg-card">
           <div className="max-w-6xl mx-auto px-6 py-24">
-            <SectionHeader eyebrow="Pricing" title="Simple, transparent pricing" subtitle="Start free. Upgrade as you hire." />
-            <div className="grid md:grid-cols-4 gap-5 mt-12">
-              <PriceCard name="Starter" price="$0" period="forever" desc="For solo founders making first hires" features={["3 JDs / month", "5 talent reports / month", "Word export", "Community support"]} cta="Start free" to={primaryCta} />
-              <PriceCard highlight name="Growth" price="$29" period="/ month" desc="For startups hiring actively" features={["50 JDs / month", "Unlimited talent reports", "Custom JD templates", "Priority email support"]} cta="Start free trial" to={primaryCta} />
-              <PriceCard name="Team" price="$79" period="/ month" desc="For lean recruiting teams" features={["Unlimited JDs", "Team workspace (5 seats)", "Advanced market data", "Dedicated success manager"]} cta="Start free trial" to={primaryCta} />
-              <PriceCard name="Enterprise" price="Custom" period="" desc="For agencies and scale-ups" features={["Unlimited everything", "SSO & advanced security", "Custom integrations", "SLA & onboarding"]} cta="Contact sales" to="#contact" />
-            </div>
+            <SectionHeader eyebrow="Pricing" title="Simple, transparent pricing" subtitle="Start with a 3-day free trial. No credit card required." />
+            <PricingPlans primaryCta={primaryCta} />
           </div>
         </section>
 
