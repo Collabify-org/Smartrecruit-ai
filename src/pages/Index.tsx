@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Sparkles, FileText, Brain, ArrowRight, Check, Star, Shield, Zap, Headphones,
   Upload, FileDown, Search, TrendingUp, Users, Target, Menu, X, Calendar, Mail,
-  Linkedin, Building2, Rocket, Briefcase, BookOpen,
+  Linkedin, Building2, Rocket, Briefcase, BookOpen, Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ export default function Index() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "SmartRecruit AI — AI Hiring Software, JD Generator & Talent Intelligence";
+    document.title = "SmartRecruit AI — AI Job Description Generator, Talent Intelligence & Interview Questions | by Collabify";
   }, []);
 
   return (
@@ -108,9 +108,10 @@ export default function Index() {
               Hire 10× faster with the <span className="text-gradient-brand">AI hiring OS</span> built for startups
             </h1>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              SmartRecruit AI gives founders, recruiters and lean hiring teams two superpowers:
+              SmartRecruit AI gives founders, recruiters and lean hiring teams three superpowers:
               an <strong className="text-foreground font-medium">AI Job Description Generator</strong> that writes JDs in your own format,
-              and a <strong className="text-foreground font-medium">Talent Intelligence Engine</strong> that decodes salaries, skills and sourcing in seconds.
+              a <strong className="text-foreground font-medium">Talent Intelligence Engine</strong> that decodes salaries, skills and sourcing in seconds,
+              and an <strong className="text-foreground font-medium">Interview Questions</strong> generator that creates role-specific phone screening sheets instantly.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to={primaryCta}>
@@ -155,7 +156,7 @@ export default function Index() {
         <section id="product" className="max-w-6xl mx-auto px-6 py-24">
           <SectionHeader
             eyebrow="Product"
-            title="Two focused tools. Zero busywork."
+            title="Three focused tools. Zero busywork."
             subtitle="Everything modern hiring teams need to ship roles faster — without the bloat of an ATS."
           />
 
