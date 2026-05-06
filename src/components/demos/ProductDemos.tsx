@@ -314,3 +314,67 @@ function DemoTalentIntelligence() {
     </DemoFrame>
   );
 }
+
+/* ---------- Demo D: Interview Questions ---------- */
+function DemoInterviewQuestions() {
+  const step = useLoopingStep(3, 1800);
+  const questions = [
+    "Walk me through how you'd design a high-throughput payments API.",
+    "How do you approach database scaling beyond 10M rows?",
+    "Describe a production incident you led to resolution.",
+  ];
+  const fields = [
+    ["Candidate name", "Total experience"],
+    ["Current CTC", "Notice period"],
+    ["Location", "Source"],
+  ];
+  return (
+    <DemoFrame title="app.smartrecruit.ai/interview-questions · Phone Screen Sheet">
+      <div className="bg-gradient-subtle p-5 min-h-[360px] space-y-3">
+        <div className="rounded-lg border border-border bg-background p-3 flex items-center gap-2">
+          <Phone className="h-3.5 w-3.5 text-brand" />
+          <div className="text-xs font-semibold">Phone Screen Sheet — Senior Backend Engineer</div>
+          <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-success/10 text-success">Generated</span>
+        </div>
+
+        <div className="rounded-lg border border-border bg-card p-3 space-y-1.5">
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Role-specific questions</div>
+          {questions.map((q, i) => (
+            <div
+              key={q}
+              className={`text-[11px] text-foreground/90 transition-all duration-500 ${step >= 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"}`}
+              style={{ transitionDelay: `${i * 120}ms` }}
+            >
+              {i + 1}. {q}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          {fields.flat().map((label, i) => (
+            <div
+              key={label}
+              className={`transition-all duration-500 ${step >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"}`}
+              style={{ transitionDelay: `${i * 60}ms` }}
+            >
+              <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">{label}</div>
+              <div className="h-7 rounded-md border border-border bg-background" />
+            </div>
+          ))}
+        </div>
+
+        <div className="rounded-lg border border-dashed border-border bg-background p-2">
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Level 1 feedback</div>
+          <div className="h-8" />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] px-2.5 py-1.5 rounded-md bg-gradient-brand text-brand-foreground font-medium inline-flex items-center gap-1.5 shadow-glow">
+            <FileDown className="h-3.5 w-3.5" /> Download .docx
+          </span>
+          <span className="text-[11px] px-2.5 py-1.5 rounded-md bg-secondary text-secondary-foreground font-medium">Copy</span>
+        </div>
+      </div>
+    </DemoFrame>
+  );
+}
