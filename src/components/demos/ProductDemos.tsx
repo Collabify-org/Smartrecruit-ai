@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Upload, FileDown, Sparkles, Check, FileText, Brain, Search, Building2, TrendingUp, DollarSign, Target, Wand2 } from "lucide-react";
+import { Upload, FileDown, Sparkles, Check, FileText, Brain, Search, Building2, TrendingUp, DollarSign, Target, Wand2, Phone } from "lucide-react";
 
 /* Helper: small in-view step counter that loops */
 function useLoopingStep(total: number, intervalMs = 1600) {
@@ -58,6 +58,20 @@ export default function ProductDemos() {
               "AI hiring strategy, ready to execute",
             ]}
             visual={<DemoTalentIntelligence />}
+          />
+          <DemoRow
+            reverse
+            tag="D · Interview Questions"
+            title="JD uploaded? Your phone screening sheet is ready."
+            desc="Paste any job description and SmartRecruit instantly generates a complete phone screening question sheet — candidate details, role-specific questions, CTC, notice period, and feedback fields. Ready to use on your next call."
+            bullets={[
+              "Role-specific questions generated from JD",
+              "Candidate name, experience, CTC fields included",
+              "Notice period, location, source fields",
+              "Level 1 feedback field",
+              "Download as .docx instantly",
+            ]}
+            visual={<DemoInterviewQuestions />}
           />
         </div>
       </div>
