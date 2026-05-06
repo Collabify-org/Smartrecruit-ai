@@ -22,6 +22,7 @@ export default function Footer() {
         <FooterCol title="Product" links={[
           { label: "JD Generator", to: "/app/jd-generator" },
           { label: "Talent Intelligence", to: "/app/talent-intelligence" },
+          { label: "Interview Questions", to: "/app/interview-questions" },
           { label: "Pricing", to: "/#pricing" },
           { label: "Use cases", to: "/#use-cases" },
         ]} />

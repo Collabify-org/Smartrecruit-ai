@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Sparkles, FileText, Brain, ArrowRight, Check, Star, Shield, Zap, Headphones,
   Upload, FileDown, Search, TrendingUp, Users, Target, Menu, X, Calendar, Mail,
-  Linkedin, Building2, Rocket, Briefcase, BookOpen,
+  Linkedin, Building2, Rocket, Briefcase, BookOpen, Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ export default function Index() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "SmartRecruit AI — AI Hiring Software, JD Generator & Talent Intelligence";
+    document.title = "SmartRecruit AI — AI Job Description Generator, Talent Intelligence & Interview Questions | by Collabify";
   }, []);
 
   return (
@@ -108,9 +108,10 @@ export default function Index() {
               Hire 10× faster with the <span className="text-gradient-brand">AI hiring OS</span> built for startups
             </h1>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              SmartRecruit AI gives founders, recruiters and lean hiring teams two superpowers:
+              SmartRecruit AI gives founders, recruiters and lean hiring teams three superpowers:
               an <strong className="text-foreground font-medium">AI Job Description Generator</strong> that writes JDs in your own format,
-              and a <strong className="text-foreground font-medium">Talent Intelligence Engine</strong> that decodes salaries, skills and sourcing in seconds.
+              a <strong className="text-foreground font-medium">Talent Intelligence Engine</strong> that decodes salaries, skills and sourcing in seconds,
+              and an <strong className="text-foreground font-medium">Interview Questions</strong> generator that creates role-specific phone screening sheets instantly.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to={primaryCta}>
@@ -155,7 +156,7 @@ export default function Index() {
         <section id="product" className="max-w-6xl mx-auto px-6 py-24">
           <SectionHeader
             eyebrow="Product"
-            title="Two focused tools. Zero busywork."
+            title="Three focused tools. Zero busywork."
             subtitle="Everything modern hiring teams need to ship roles faster — without the bloat of an ATS."
           />
 
@@ -224,6 +225,51 @@ export default function Index() {
               </BrowserFrame>
             }
           />
+
+          <FeatureBlock
+            tag="Interview Questions Generator"
+            icon={Phone}
+            title="Walk into every call fully prepared."
+            pain="HR teams scramble to prepare screening questions for every new role. Generic questions miss role-specific depth."
+            solution="Paste any JD and SmartRecruit generates a complete phone screening sheet — role-specific questions, candidate detail fields, CTC, notice period, feedback section — ready in seconds."
+            bullets={[
+              "Role-specific questions generated from JD",
+              "Complete candidate detail fields included",
+              "CTC, notice period, location capture",
+              "Level 1 feedback field built in",
+              "Download as .docx in one click",
+            ]}
+            visual={
+              <BrowserFrame title="Interview Questions · Phone Screen Sheet">
+                <div className="p-5 space-y-3 bg-gradient-subtle">
+                  <div className="text-xs font-semibold flex items-center gap-2">
+                    <Phone className="h-3.5 w-3.5 text-brand" /> Phone Screen Sheet — Senior Backend Engineer
+                  </div>
+                  <div className="rounded-lg border border-border bg-card p-3 space-y-2">
+                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Role-specific questions</div>
+                    <div className="text-[11px] text-foreground/90">1. Walk me through how you'd design a high-throughput payments API.</div>
+                    <div className="text-[11px] text-foreground/90">2. How do you approach database scaling beyond 10M rows?</div>
+                    <div className="text-[11px] text-foreground/90">3. Describe a production incident you led to resolution.</div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <MockField label="Candidate name" value="" />
+                    <MockField label="Total experience" value="" />
+                    <MockField label="Current CTC" value="" />
+                    <MockField label="Notice period" value="" />
+                    <MockField label="Location" value="" />
+                    <MockField label="Source" value="" />
+                  </div>
+                  <div className="rounded-lg border border-dashed border-border bg-background p-2">
+                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Level 1 feedback</div>
+                    <div className="h-10" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] px-2 py-1 rounded-md bg-accent text-accent-foreground inline-flex items-center gap-1"><FileDown className="h-3 w-3" />Download .docx</span>
+                  </div>
+                </div>
+              </BrowserFrame>
+            }
+          />
         </section>
 
         {/* USE CASES */}
@@ -231,9 +277,9 @@ export default function Index() {
           <div className="max-w-6xl mx-auto px-6 py-24">
             <SectionHeader eyebrow="Use cases" title="Built for the way modern teams hire" />
             <div className="grid md:grid-cols-3 gap-5 mt-10">
-              <UseCase icon={Rocket} title="Startup founders" desc="Write your first 10 JDs without hiring a recruiter. Know what to pay before you post." />
-              <UseCase icon={Briefcase} title="In-house recruiters" desc="Standardize JDs across teams. Source faster with AI-generated Boolean strings." />
-              <UseCase icon={Users} title="Hiring agencies" desc="Spin up market intelligence for every client brief in minutes, not days." />
+              <UseCase icon={Rocket} title="Startup founders" desc="Write your first 10 JDs without hiring a recruiter. Know what to pay before you post. Generate phone screening questions for every role instantly." />
+              <UseCase icon={Briefcase} title="In-house recruiters" desc="Standardize JDs across teams. Source faster with AI-generated Boolean strings. Standardize your phone screening process with role-specific question sheets." />
+              <UseCase icon={Users} title="Hiring agencies" desc="Spin up market intelligence for every client brief in minutes, not days. Prepare screening sheets for every client brief in minutes." />
             </div>
           </div>
         </section>
@@ -309,11 +355,13 @@ export default function Index() {
         <section id="faq" className="max-w-3xl mx-auto px-6 py-24">
           <SectionHeader eyebrow="FAQ" title="Frequently asked questions" />
           <Accordion type="single" collapsible className="mt-8">
-            <FaqItem q="How does the JD Generator work?" a="Pick a mode: upload your company JD template (we replicate its structure) or use SmartRecruit Smart Format. Enter the role, seniority and location and we generate a polished JD you can edit, copy or export as .docx." />
-            <FaqItem q="Can I upload my own template?" a="Yes. Upload a Word doc once and SmartRecruit will mirror its sections, tone and headings on every future JD generation." />
-            <FaqItem q="How accurate are the salary insights?" a="We aggregate market signals across thousands of public job posts and benchmarks, then localize by region and seniority. Most teams find our bands within 5–8% of their offers." />
-            <FaqItem q="Is there a free trial?" a="Yes — every paid plan includes a 14-day free trial. No credit card required to start, and you can cancel anytime." />
-            <FaqItem q="Do you support agencies?" a="Absolutely. The Team and Enterprise plans support multi-client workspaces, so agencies can run intelligence reports per brief." />
+            <FaqItem q="How does the AI job description generator work?" a="The AI job description generator turns a role brief into a polished JD in under 60 seconds. Upload your company JD template or use SmartRecruit Smart Format, then enter the role name, experience, skills and work mode. SmartRecruit AI produces a structured, on-brand JD ready to edit, copy or export as a Word .docx file." />
+            <FaqItem q="Can I upload my own template?" a="You can upload your own company JD template once and SmartRecruit AI will mirror its sections, headings and tone on every future JD generation, keeping every role on-brand without manual reformatting." />
+            <FaqItem q="What is talent intelligence software?" a="Talent intelligence software analyzes labor market data including salaries, skills, hiring trends and competitor activity to help recruiters make better hiring decisions. SmartRecruit AI turns any job description into an instant market briefing with salary ranges, Boolean search strings, and sourcing recommendations." />
+            <FaqItem q="How does the Interview Questions generator work?" a="The Interview Questions generator instantly creates a complete phone screening sheet from any JD. Paste a job description into SmartRecruit AI and it produces role-specific behavioural and technical questions plus candidate detail fields including CTC, notice period, location and Level 1 feedback — all downloadable as .docx in one click." />
+            <FaqItem q="How accurate are the salary insights?" a="The salary insights in SmartRecruit AI are based on current market data for the specific role, seniority level and location, covering India, USA and Gulf markets. Most teams find our salary bands within 5–8% of their actual offers, and the dataset is refreshed regularly to reflect current hiring trends." />
+            <FaqItem q="Is there a free trial?" a="Every SmartRecruit AI plan includes a 3-day free trial with no credit card required. You get full access to JD generation, talent intelligence and interview questions during the trial, and can cancel anytime." />
+            <FaqItem q="Does SmartRecruit AI support hiring agencies?" a="The Agency and Enterprise plan supports hiring agencies with unlimited JD generations, talent intelligence analyses and interview question sets, plus unlimited user seats, white label, API access and a dedicated account manager. Custom pricing is tailored to your team size." />
           </Accordion>
         </section>
 
@@ -343,7 +391,7 @@ export default function Index() {
         <section className="max-w-6xl mx-auto px-6 pb-24">
           <div className="rounded-2xl bg-gradient-brand text-brand-foreground p-10 text-center shadow-glow">
             <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">Ready to hire smarter?</h2>
-            <p className="mt-2 opacity-90 max-w-xl mx-auto text-sm sm:text-base">Join hundreds of teams using SmartRecruit AI to ship roles faster.</p>
+            <p className="mt-2 opacity-90 max-w-xl mx-auto text-sm sm:text-base">Join hundreds of teams using SmartRecruit AI to generate JDs, decode talent markets, and prepare interview questions — all in one place.</p>
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to={primaryCta}>
                 <Button size="lg" className="bg-background text-foreground hover:bg-background/90">
