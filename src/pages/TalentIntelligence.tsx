@@ -26,7 +26,7 @@ export default function TalentIntelligence() {
       toast.error((data as any)?.error || error?.message || "Failed to analyze");
       return;
     }
-    setReport((data as any).results);
+    setReport((data as any).result);
     toast.success("Analysis complete");
   };
 
