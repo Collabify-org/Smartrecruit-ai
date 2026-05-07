@@ -37,7 +37,7 @@ export default function Topbar({ onMenu }: { onMenu?: () => void }) {
           <DropdownMenuItem onClick={() => navigate("/app/settings")}><SettingsIcon className="h-4 w-4 mr-2" />Settings</DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate("/app/billing")}><CreditCard className="h-4 w-4 mr-2" />Billing</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => { signOut(); navigate("/login"); }}>
+          <DropdownMenuItem onClick={async () => { await signOut(); navigate("/login"); }}>
             <LogOut className="h-4 w-4 mr-2" />Log out
           </DropdownMenuItem>
         </DropdownMenuContent>
