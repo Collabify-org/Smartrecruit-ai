@@ -28,7 +28,8 @@ const NAV = [
 
 export default function Index() {
   const authed = isAuthed();
-  const primaryCta = authed ? "/app/jd-generator" : "/signup";
+  const primaryCta = authed ? "/app/jd-generator" : "/login";
+  const primaryCtaLabel = authed ? "Open app" : "Log in";
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -52,22 +53,11 @@ export default function Index() {
             ))}
           </nav>
           <div className="hidden lg:flex items-center gap-2">
-            {authed ? (
-              <Link to="/app/jd-generator">
-                <Button size="sm" className="bg-gradient-brand text-brand-foreground hover:opacity-95 shadow-glow">
-                  Open app <ArrowRight className="ml-1.5 h-4 w-4" />
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link to="/login"><Button size="sm" variant="ghost">Log in</Button></Link>
-                <Link to="/signup">
-                  <Button size="sm" className="bg-gradient-brand text-brand-foreground hover:opacity-95 shadow-glow">
-                    Get started <ArrowRight className="ml-1.5 h-4 w-4" />
-                  </Button>
-                </Link>
-              </>
-            )}
+            <Link to={primaryCta}>
+              <Button size="sm" className="bg-gradient-brand text-brand-foreground hover:opacity-95 shadow-glow">
+                {primaryCtaLabel} <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
           <button
             className="lg:hidden h-9 w-9 inline-flex items-center justify-center rounded-md border border-border"
@@ -84,8 +74,7 @@ export default function Index() {
                 <a key={n.label} href={n.href} onClick={() => setMobileOpen(false)} className="text-sm text-muted-foreground hover:text-foreground">{n.label}</a>
               ))}
               <div className="flex gap-2 pt-2">
-                <Link to="/login" className="flex-1"><Button variant="outline" className="w-full">Log in</Button></Link>
-                <Link to={primaryCta} className="flex-1"><Button className="w-full bg-gradient-brand text-brand-foreground">Get started</Button></Link>
+                <Link to={primaryCta} className="flex-1"><Button className="w-full bg-gradient-brand text-brand-foreground">{primaryCtaLabel}</Button></Link>
               </div>
             </div>
           </div>
@@ -116,7 +105,7 @@ export default function Index() {
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to={primaryCta}>
                 <Button size="lg" className="bg-gradient-brand text-brand-foreground hover:opacity-95 shadow-glow">
-                  Start free trial <ArrowRight className="ml-2 h-4 w-4" />
+                  {primaryCtaLabel} <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <a href="#contact">
