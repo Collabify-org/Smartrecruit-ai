@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Mic, Loader2, Download } from "lucide-react";
+import { Mic, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function InterviewQuestions() {
@@ -14,19 +14,62 @@ export default function InterviewQuestions() {
   const [activeTab, setActiveTab] = useState("technical");
 
   const generate = async () => {
-    if (jd.trim().length < 30) {
-      toast.error("Paste a longer JD to generate questions");
-      return;
+    try {
+      if (jd.trim().length < 30) {
+        toast.error("Paste a longer JD");
+        return;
+      }
+
+      setLoading(true);
+
+      console.log("Sending request to Edge Function...");
+
+      const { data, error } = await supabase.functions.invoke(
+        "interview-questions",
+        {
+          body: { jd },
+        }
+      );
+
+      console.log("Edge Function Response:", data);
+      console.log("Edge Function Error:", error);
+
+      if (error) {
+        console.error("Invoke Error:", error);
+
+        toast.error(
+          error.message || "Failed to generate interview questions"
+        );
+
+        return;
+      }
+
+      if (!data) {
+        toast.error("No data returned");
+        return;
+      }
+
+      if (data.error) {
+        console.error("Function Error:", data.error);
+
+        toast.error(data.error);
+
+        return;
+      }
+
+      setResult(data.result);
+
+      toast.success("Interview Questions Generated");
+
+    } catch (err: any) {
+      console.error("Frontend Catch Error:", err);
+
+      toast.error(
+        err.message || "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
     }
-    setLoading(true);
-    const { data, error } = await supabase.functions.invoke("interview-questions", { body: { jd } });
-    setLoading(false);
-    if (error || (data as any)?.error) {
-      toast.error((data as any)?.error || error?.message || "Failed to generate questions");
-      return;
-    }
-    setResult((data as any).result);
-    toast.success("Interview questions ready!");
   };
 
   const diffBadge = (d: string) => {
@@ -35,8 +78,13 @@ export default function InterviewQuestions() {
       Medium: "bg-yellow-100 text-yellow-800",
       Hard: "bg-red-100 text-red-800",
     };
+
     return (
-      <span className={`text-xs font-bold px-2 py-0.5 rounded ${map[d] || "bg-gray-100 text-gray-700"}`}>
+      <span
+        className={`text-xs font-bold px-2 py-0.5 rounded ${
+          map[d] || "bg-gray-100 text-gray-700"
+        }`}
+      >
         {d}
       </span>
     );
@@ -59,52 +107,66 @@ export default function InterviewQuestions() {
         description="Generate role-specific interview questions instantly from any JD."
       />
 
-      {/* Input Card */}
       <Card className="p-5 shadow-soft-sm mb-6">
         <Textarea
           value={jd}
           onChange={(e) => setJd(e.target.value)}
-          placeholder="Paste a job description here…"
+          placeholder="Paste a job description here..."
           rows={6}
           className="text-sm"
         />
+
         <div className="flex items-center justify-between mt-3">
-          <p className="text-xs text-muted-foreground">{jd.length} characters</p>
+          <p className="text-xs text-muted-foreground">
+            {jd.length} characters
+          </p>
+
           <Button
             onClick={generate}
             disabled={loading}
             className="bg-gradient-brand text-brand-foreground hover:opacity-95 shadow-glow"
           >
             {loading ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Generating…</>
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Generating...
+              </>
             ) : (
-              <><Mic className="h-4 w-4 mr-2" />Generate Questions</>
+              <>
+                <Mic className="h-4 w-4 mr-2" />
+                Generate Questions
+              </>
             )}
           </Button>
         </div>
       </Card>
 
-      {/* Empty State */}
       {!result && !loading && (
         <Card className="p-12 text-center border-2 border-dashed shadow-none bg-transparent">
           <Mic className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
+
           <p className="text-sm text-muted-foreground">
-            Paste a JD and click Generate Questions to build your interview kit.
+            Paste a JD and click Generate Questions.
           </p>
         </Card>
       )}
 
-      {/* Results */}
       {result && (
         <div className="rounded-lg overflow-hidden border border-gray-200 shadow-md">
 
-          {/* Doc Title Bar */}
-          <div style={{ background: "#0f2744" }} className="px-6 py-4">
-            <h2 className="text-white font-bold text-lg tracking-tight">📋 Interview Question Bank</h2>
-            <p className="text-blue-300 text-xs mt-1">Generated by JARVIS · Role-specific questions</p>
+          <div
+            style={{ background: "#0f2744" }}
+            className="px-6 py-4"
+          >
+            <h2 className="text-white font-bold text-lg tracking-tight">
+              📋 Interview Question Bank
+            </h2>
+
+            <p className="text-blue-300 text-xs mt-1">
+              Generated by JARVIS
+            </p>
           </div>
 
-          {/* Tab Bar */}
           <div className="flex overflow-x-auto border-b-2 border-[#1a3a5c] bg-gray-50">
             {tabs.map((t) => (
               <button
@@ -121,296 +183,84 @@ export default function InterviewQuestions() {
             ))}
           </div>
 
-          {/* Panel Content */}
-          <div className="bg-white">
+          <div className="bg-white p-6">
 
-            {/* TECHNICAL */}
             {activeTab === "technical" && (
-              <div>
-                <div style={{ background: "#1a3a5c" }} className="px-5 py-2.5 text-white text-xs font-bold tracking-widest uppercase">
-                  🧠 Technical Questions — 10 Questions
-                </div>
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr style={{ background: "#1a3a5c" }}>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-8">#</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold">Question</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-20">Level</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-36">Category</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-48">Ideal Answer Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.technical?.map((q: any, i: number) => (
-                      <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
-                        <td className="px-4 py-3 text-[#1a3a5c] font-bold text-xs align-top">{i + 1}</td>
-                        <td className="px-4 py-3 text-gray-800 align-top text-xs leading-relaxed">{q.question}</td>
-                        <td className="px-4 py-3 align-top">{diffBadge(q.difficulty)}</td>
-                        <td className="px-4 py-3 text-gray-600 align-top text-xs">{q.category}</td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="list-disc pl-3 space-y-0.5">
-                            {q.ideal_answer_points?.map((p: string, j: number) => (
-                              <li key={j} className="text-xs text-gray-600">{p}</li>
-                            ))}
-                          </ul>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+              <div className="space-y-4">
+                {result.technical?.map((q: any, i: number) => (
+                  <Card key={i} className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-sm">
+                        {i + 1}. {q.question}
+                      </h3>
 
-            {/* BEHAVIORAL */}
-            {activeTab === "behavioral" && (
-              <div>
-                <div style={{ background: "#1a3a5c" }} className="px-5 py-2.5 text-white text-xs font-bold tracking-widest uppercase">
-                  🎯 Behavioral Questions — STAR Method
-                </div>
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr style={{ background: "#1a3a5c" }}>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-8">#</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold">Question</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-36">Competency</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-48">STAR Prompts</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-40">Red Flags</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.behavioral?.map((q: any, i: number) => (
-                      <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
-                        <td className="px-4 py-3 text-[#1a3a5c] font-bold text-xs align-top">{i + 1}</td>
-                        <td className="px-4 py-3 text-gray-800 align-top text-xs leading-relaxed">{q.question}</td>
-                        <td className="px-4 py-3 align-top">
-                          <span className="inline-block bg-blue-100 text-[#1a3a5c] text-xs px-2 py-0.5 rounded font-semibold">
-                            {q.competency}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="space-y-0.5">
-                            {q.star_prompts?.map((p: string, j: number) => (
-                              <li key={j} className="text-xs text-gray-600">• {p}</li>
-                            ))}
-                          </ul>
-                        </td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="space-y-0.5">
-                            {q.red_flags?.map((f: string, j: number) => (
-                              <li key={j} className="text-xs text-red-600">⚠ {f}</li>
-                            ))}
-                          </ul>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* SITUATIONAL */}
-            {activeTab === "situational" && (
-              <div>
-                <div style={{ background: "#1a3a5c" }} className="px-5 py-2.5 text-white text-xs font-bold tracking-widest uppercase">
-                  🔥 Situational Questions
-                </div>
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr style={{ background: "#1a3a5c" }}>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-8">#</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold">Question</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-36">What to Assess</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-48">Ideal Answer Points</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-40">Red Flags</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.situational?.map((q: any, i: number) => (
-                      <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
-                        <td className="px-4 py-3 text-[#1a3a5c] font-bold text-xs align-top">{i + 1}</td>
-                        <td className="px-4 py-3 text-gray-800 align-top text-xs leading-relaxed">{q.question}</td>
-                        <td className="px-4 py-3 text-gray-600 align-top text-xs">{q.what_to_assess}</td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="list-disc pl-3 space-y-0.5">
-                            {q.ideal_answer_points?.map((p: string, j: number) => (
-                              <li key={j} className="text-xs text-gray-600">{p}</li>
-                            ))}
-                          </ul>
-                        </td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="space-y-0.5">
-                            {q.red_flags?.map((f: string, j: number) => (
-                              <li key={j} className="text-xs text-red-600">⚠ {f}</li>
-                            ))}
-                          </ul>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* CULTURE FIT */}
-            {activeTab === "culture_fit" && (
-              <div>
-                <div style={{ background: "#1a3a5c" }} className="px-5 py-2.5 text-white text-xs font-bold tracking-widest uppercase">
-                  🤝 Culture Fit Questions
-                </div>
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr style={{ background: "#1a3a5c" }}>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-8">#</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold">Question</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-40">What to Assess</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-48">Positive Signals</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-40">Red Flags</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.culture_fit?.map((q: any, i: number) => (
-                      <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
-                        <td className="px-4 py-3 text-[#1a3a5c] font-bold text-xs align-top">{i + 1}</td>
-                        <td className="px-4 py-3 text-gray-800 align-top text-xs leading-relaxed">{q.question}</td>
-                        <td className="px-4 py-3 text-gray-600 align-top text-xs">{q.what_to_assess}</td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="space-y-0.5">
-                            {q.positive_signals?.map((p: string, j: number) => (
-                              <li key={j} className="text-xs text-green-700">✓ {p}</li>
-                            ))}
-                          </ul>
-                        </td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="space-y-0.5">
-                            {q.red_flags?.map((f: string, j: number) => (
-                              <li key={j} className="text-xs text-red-600">⚠ {f}</li>
-                            ))}
-                          </ul>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* ROLE SPECIFIC */}
-            {activeTab === "role_specific" && (
-              <div>
-                <div style={{ background: "#1a3a5c" }} className="px-5 py-2.5 text-white text-xs font-bold tracking-widest uppercase">
-                  💼 Role-Specific Questions
-                </div>
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr style={{ background: "#1a3a5c" }}>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-8">#</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold">Question</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-44">Why Critical</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-48">Ideal Answer Points</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-40">Red Flags</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.role_specific?.map((q: any, i: number) => (
-                      <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
-                        <td className="px-4 py-3 text-[#1a3a5c] font-bold text-xs align-top">{i + 1}</td>
-                        <td className="px-4 py-3 text-gray-800 align-top text-xs leading-relaxed">{q.question}</td>
-                        <td className="px-4 py-3 text-gray-600 align-top text-xs italic">{q.rationale}</td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="list-disc pl-3 space-y-0.5">
-                            {q.ideal_answer_points?.map((p: string, j: number) => (
-                              <li key={j} className="text-xs text-gray-600">{p}</li>
-                            ))}
-                          </ul>
-                        </td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="space-y-0.5">
-                            {q.red_flags?.map((f: string, j: number) => (
-                              <li key={j} className="text-xs text-red-600">⚠ {f}</li>
-                            ))}
-                          </ul>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* INTERVIEW STRUCTURE */}
-            {activeTab === "structure" && (
-              <div>
-                <div style={{ background: "#1a3a5c" }} className="px-5 py-2.5 text-white text-xs font-bold tracking-widest uppercase">
-                  📋 Interview Structure
-                </div>
-                <div className="divide-y divide-gray-100">
-                  {result.interview_structure?.map((r: any, i: number) => (
-                    <div key={i} className="flex items-start gap-4 px-6 py-4">
-                      <div
-                        style={{ background: "#1a3a5c" }}
-                        className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-1"
-                      >
-                        {i + 1}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <h4 className="font-bold text-[#1a3a5c] text-sm">{r.name}</h4>
-                          <span className="text-xs bg-blue-100 text-[#1a3a5c] px-2 py-0.5 rounded font-semibold">
-                            {r.duration_minutes} mins
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-600 mt-1">{r.focus}</p>
-                        <p className="text-xs text-gray-400 mt-1">Interviewer: {r.interviewer}</p>
-                      </div>
+                      {diffBadge(q.difficulty)}
                     </div>
-                  ))}
-                </div>
+
+                    <p className="text-xs text-gray-500 mb-2">
+                      {q.category}
+                    </p>
+
+                    <ul className="list-disc pl-5 text-xs text-gray-700 space-y-1">
+                      {q.ideal_answer_points?.map((p: string, j: number) => (
+                        <li key={j}>{p}</li>
+                      ))}
+                    </ul>
+                  </Card>
+                ))}
               </div>
             )}
 
-            {/* SCORECARD */}
-            {activeTab === "scorecard" && (
-              <div>
-                <div style={{ background: "#1a3a5c" }} className="px-5 py-2.5 text-white text-xs font-bold tracking-widest uppercase">
-                  ✅ Evaluation Scorecard
-                </div>
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr style={{ background: "#1a3a5c" }}>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold">Criteria</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-20">Weight</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-48">Green Flags</th>
-                      <th className="text-white text-left px-4 py-2.5 text-xs font-semibold w-48">Red Flags</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.scorecard?.map((s: any, i: number) => (
-                      <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
-                        <td className="px-4 py-3 font-semibold text-[#1a3a5c] text-xs align-top">{s.criteria}</td>
-                        <td className="px-4 py-3 align-top">
-                          <span className="text-xs font-bold bg-[#1a3a5c] text-white px-2 py-0.5 rounded">
-                            {s.weight}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="space-y-0.5">
-                            {s.green_flags?.map((f: string, j: number) => (
-                              <li key={j} className="text-xs text-green-700">✓ {f}</li>
-                            ))}
-                          </ul>
-                        </td>
-                        <td className="px-4 py-3 align-top">
-                          <ul className="space-y-0.5">
-                            {s.red_flags?.map((f: string, j: number) => (
-                              <li key={j} className="text-xs text-red-600">⚠ {f}</li>
-                            ))}
-                          </ul>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {activeTab === "behavioral" && (
+              <div className="space-y-4">
+                {result.behavioral?.map((q: any, i: number) => (
+                  <Card key={i} className="p-4">
+                    <h3 className="font-semibold text-sm mb-2">
+                      {i + 1}. {q.question}
+                    </h3>
+
+                    <p className="text-xs text-blue-700 mb-2">
+                      {q.competency}
+                    </p>
+
+                    <ul className="list-disc pl-5 text-xs text-gray-700">
+                      {q.star_prompts?.map((p: string, j: number) => (
+                        <li key={j}>{p}</li>
+                      ))}
+                    </ul>
+                  </Card>
+                ))}
               </div>
+            )}
+
+            {activeTab === "situational" && (
+              <pre className="text-xs overflow-auto whitespace-pre-wrap">
+                {JSON.stringify(result.situational, null, 2)}
+              </pre>
+            )}
+
+            {activeTab === "culture_fit" && (
+              <pre className="text-xs overflow-auto whitespace-pre-wrap">
+                {JSON.stringify(result.culture_fit, null, 2)}
+              </pre>
+            )}
+
+            {activeTab === "role_specific" && (
+              <pre className="text-xs overflow-auto whitespace-pre-wrap">
+                {JSON.stringify(result.role_specific, null, 2)}
+              </pre>
+            )}
+
+            {activeTab === "structure" && (
+              <pre className="text-xs overflow-auto whitespace-pre-wrap">
+                {JSON.stringify(result.interview_structure, null, 2)}
+              </pre>
+            )}
+
+            {activeTab === "scorecard" && (
+              <pre className="text-xs overflow-auto whitespace-pre-wrap">
+                {JSON.stringify(result.scorecard, null, 2)}
+              </pre>
             )}
 
           </div>
