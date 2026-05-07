@@ -34,13 +34,8 @@ export default function TalentIntelligence() {
   const downloadDocx = async () => {
     if (!report) return;
     const text = buildPlainText(report);
-    const blob = new Blob([text], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "Talent-Intelligence-Report.txt";
-    a.click();
-    toast.success("Downloaded!");
+    await exportMarkdownToDocx(text, "Talent-Intelligence-Report");
+    toast.success("Word file downloaded!");
   };
 
   const buildPlainText = (r: any) => {
