@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Brain, Loader2, Copy, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { exportMarkdownToDocx } from "@/lib/docxExport";
 
 const NAVY = "#0D2B55";
 const LIGHT_BLUE = "#E8F0FA";
