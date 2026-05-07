@@ -25,7 +25,7 @@ export default function InterviewQuestions() {
       console.log("Sending request to Edge Function...");
 
       const { data, error } = await supabase.functions.invoke(
-        "interview-questions",
+       "quick-action",
         {
           body: { jd },
         }
