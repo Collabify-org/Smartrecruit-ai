@@ -305,7 +305,7 @@ export default function Index() {
         <section id="pricing" className="border-t border-border bg-card">
           <div className="max-w-6xl mx-auto px-6 py-24">
             <SectionHeader eyebrow="Pricing" title="Simple, transparent pricing" subtitle="Start with a 3-day free trial. No credit card required." />
-            <PricingPlans primaryCta={primaryCta} />
+            <PricingPlans primaryCta={primaryCta} primaryCtaLabel={primaryCtaLabel} />
           </div>
         </section>
 
@@ -544,7 +544,7 @@ function PriceCard({ name, price, period, desc, features, cta, to, highlight, su
   return to.startsWith("#") ? <a href={to} className="contents">{inner}</a> : <Link to={to} className="contents">{inner}</Link>;
 }
 
-function PricingPlans({ primaryCta }: { primaryCta: string }) {
+function PricingPlans({ primaryCta, primaryCtaLabel }: { primaryCta: string; primaryCtaLabel: string }) {
   const [currency, setCurrency] = useState<"INR" | "USD">("USD");
 
   useEffect(() => {
