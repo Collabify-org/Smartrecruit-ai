@@ -44,14 +44,14 @@ export default function JDGenerator() {
     }
     setLoading(true);
     const { data, error } = await supabase.functions.invoke("generate-jd", {
-      body: { ...input, mode, template },
+      body: { roleName: input.role, experience: input.experience, skills: input.skills, companyName: input.company, workMode: input.workMode, mode, template },
     });
     setLoading(false);
     if (error || (data as any)?.error) {
       toast.error((data as any)?.error || error?.message || "Failed to generate JD");
       return;
     }
-    setOutput((data as any).content);
+    setOutput((data as any).jd);
     toast.success("JD generated");
   };
 
