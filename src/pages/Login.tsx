@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles } from "lucide-react";
-import { signIn } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export default function Login() {
@@ -12,10 +12,15 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const submit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return toast.error("Enter email and password");
-    signIn(email);
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (error) return toast.error(error.message);
     toast.success("Welcome back");
     navigate("/app/jd-generator");
   };
@@ -49,10 +54,12 @@ export default function Login() {
             <Label>Password</Label>
             <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
           </div>
-          <Button type="submit" className="w-full bg-gradient-brand text-brand-foreground shadow-glow">Log in</Button>
-          <div className="text-sm text-muted-foreground text-center">
-            No account? <Link to="/signup" className="text-foreground font-medium hover:underline">Sign up</Link>
-          </div>
+          <Button type="submit" disabled={loading} className="w-full bg-gradient-brand text-brand-foreground shadow-glow">
+            {loading ? "Signing in…" : "Log in"}
+          </Button>
+          <p className="text-xs text-muted-foreground text-center">
+            Access is invite-only. Contact <a className="underline" href="mailto:team@collabifyspace.com">team@collabifyspace.com</a> to request an account.
+          </p>
         </form>
       </div>
     </div>

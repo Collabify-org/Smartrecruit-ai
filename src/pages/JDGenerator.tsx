@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Copy, Download, Sparkles, Upload, FileText, Loader2, CheckCheck } from "lucide-react";
 import { exportMarkdownToDocx } from "@/lib/docxExport";
-import { generateSmartRecruitJD, fillTemplate, type JDInput } from "@/lib/jdGenerator";
+import { type JDInput } from "@/lib/jdGenerator";
+import { supabase } from "@/integrations/supabase/client";
 import { lsGet, lsSet } from "@/lib/storage";
 
 export default function JDGenerator() {
@@ -42,10 +43,15 @@ export default function JDGenerator() {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1100));
-    const result = mode === "smartrecruit" ? generateSmartRecruitJD(input) : fillTemplate(template, input);
-    setOutput(result);
+    const { data, error } = await supabase.functions.invoke("generate-jd", {
+      body: { ...input, mode, template },
+    });
     setLoading(false);
+    if (error || (data as any)?.error) {
+      toast.error((data as any)?.error || error?.message || "Failed to generate JD");
+      return;
+    }
+    setOutput((data as any).content);
     toast.success("JD generated");
   };
 
