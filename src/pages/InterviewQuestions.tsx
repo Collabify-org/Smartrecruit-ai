@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Mic, Loader2, Copy, Download, CheckCheck } from "lucide-react";
-import { generatePhoneScreen, type PhoneScreenSheet } from "@/lib/interviewQuestions";
+import { supabase } from "@/integrations/supabase/client";
 import { exportMarkdownToDocx } from "@/lib/docxExport";
+
+type PhoneScreenSheet = { role: string; markdown: string };
 
 export default function InterviewQuestions() {
   const [jd, setJd] = useState("");
@@ -20,9 +22,15 @@ export default function InterviewQuestions() {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setSheet(generatePhoneScreen(jd));
+    const { data, error } = await supabase.functions.invoke("interview-questions", { body: { jd } });
     setLoading(false);
+    if (error || (data as any)?.error) {
+      toast.error((data as any)?.error || error?.message || "Failed to generate questions");
+      return;
+    }
+    const md = (data as any).questions as string;
+    const roleMatch = md.match(/Phone Screen Sheet\s*[—-]\s*(.+)/i);
+    setSheet({ role: roleMatch?.[1]?.trim() || "Role", markdown: md });
     toast.success("Phone screen sheet ready");
   };
 
