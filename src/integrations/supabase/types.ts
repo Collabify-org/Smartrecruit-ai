@@ -14,7 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      interview_history: {
+        Row: {
+          created_at: string
+          id: string
+          jd_input: string | null
+          questions: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          jd_input?: string | null
+          questions?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          jd_input?: string | null
+          questions?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jd_history: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          mode: string | null
+          role_name: string | null
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          mode?: string | null
+          role_name?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          mode?: string | null
+          role_name?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jd_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          billing_date: string | null
+          created_at: string
+          email: string | null
+          id: string
+          plan: string
+          trial_expires_at: string | null
+          usage_interview: number
+          usage_jd: number
+          usage_talent: number
+        }
+        Insert: {
+          billing_date?: string | null
+          created_at?: string
+          email?: string | null
+          id: string
+          plan?: string
+          trial_expires_at?: string | null
+          usage_interview?: number
+          usage_jd?: number
+          usage_talent?: number
+        }
+        Update: {
+          billing_date?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          plan?: string
+          trial_expires_at?: string | null
+          usage_interview?: number
+          usage_jd?: number
+          usage_talent?: number
+        }
+        Relationships: []
+      }
+      talent_history: {
+        Row: {
+          created_at: string
+          id: string
+          jd_input: string | null
+          results: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          jd_input?: string | null
+          results?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          jd_input?: string | null
+          results?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "talent_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
