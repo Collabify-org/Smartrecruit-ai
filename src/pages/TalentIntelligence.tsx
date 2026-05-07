@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Brain, Loader2, Copy, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { exportMarkdownToDocx } from "@/lib/docxExport";
+import { exportTalentReportToDocx } from "@/lib/docxExport";
 
 const NAVY = "#0D2B55";
 const LIGHT_BLUE = "#E8F0FA";
@@ -34,8 +34,7 @@ export default function TalentIntelligence() {
 
   const downloadDocx = async () => {
     if (!report) return;
-    const text = buildPlainText(report);
-    await exportMarkdownToDocx(text, "Talent-Intelligence-Report");
+    await exportTalentReportToDocx(report, "Talent-Intelligence-Report");
     toast.success("Word file downloaded!");
   };
 
