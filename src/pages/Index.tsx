@@ -384,7 +384,7 @@ export default function Index() {
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to={primaryCta}>
                 <Button size="lg" className="bg-background text-foreground hover:bg-background/90">
-                  Start free trial <ArrowRight className="ml-2 h-4 w-4" />
+                  {primaryCtaLabel} <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <a href="#contact">
@@ -579,7 +579,7 @@ function PricingPlans({ primaryCta }: { primaryCta: string }) {
             "Email support",
             "3-day free trial",
           ]}
-          cta="Start free trial"
+          cta={primaryCtaLabel}
           to={primaryCta}
         />
         <PriceCard
@@ -599,7 +599,7 @@ function PricingPlans({ primaryCta }: { primaryCta: string }) {
             "Priority email support",
             "3-day free trial",
           ]}
-          cta="Start free trial"
+          cta={primaryCtaLabel}
           to={primaryCta}
         />
         <PriceCard
