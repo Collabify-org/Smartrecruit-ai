@@ -28,7 +28,7 @@ export default function HeroProductPreview() {
           <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
           <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
           <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
-          <div className="ml-3 text-[11px] text-muted-foreground truncate">app.smartrecruit.ai</div>
+          <div className="ml-3 text-[11px] text-muted-foreground truncate">app.Synlumex.ai</div>
           <div className="ml-auto flex items-center gap-1.5">
             {FRAMES.map((f) => (
               <span
@@ -90,7 +90,7 @@ function FrameJD() {
         <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Inputs</div>
         <Field label="Role" value="Senior Product Engineer" />
         <Field label="Seniority" value="Senior · 5+ yrs" />
-        <Field label="Mode" value="SmartRecruit Smart Format" />
+        <Field label="Mode" value="Synlumex Smart Format" />
         <div className="pt-1">
           <div className="h-9 rounded-md bg-gradient-brand text-brand-foreground text-xs font-medium flex items-center justify-center gap-1.5 shadow-glow">
             <Sparkles className="h-3.5 w-3.5" /> Generating JD…
@@ -169,7 +169,7 @@ function FrameWorkflow() {
       <div className="mt-6 rounded-lg border border-border bg-card p-4 space-y-2 animate-slide-up-fade [animation-delay:1.2s]">
         <div className="flex items-center gap-2 text-xs">
           <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-          <span className="text-muted-foreground">SmartRecruit AI</span>
+          <span className="text-muted-foreground">Synlumex AI</span>
           <span className="ml-auto text-[10px] text-muted-foreground">just now</span>
         </div>
         <div className="text-sm">
