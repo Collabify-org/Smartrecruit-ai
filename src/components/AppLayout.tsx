@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { FileText, Brain, CreditCard, Settings as SettingsIcon, Sparkles, Menu, X, Mic } from "lucide-react";
+import { FileText, Brain, CreditCard, Settings as SettingsIcon, Menu, X, Mic } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Topbar from "./Topbar";
@@ -17,12 +17,7 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/80 backdrop-blur px-4 h-14">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-brand flex items-center justify-center shadow-glow">
-            <Sparkles className="h-4 w-4 text-brand-foreground" />
-          </div>
-          <span className="font-semibold tracking-tight">SmartRecruit AI</span>
-        </div>
+        <img src="/synlumex-logo.png.png" alt="Synlumex" className="h-7 object-contain" />
         <button onClick={() => setOpen(!open)} className="p-2 rounded-md hover:bg-secondary">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -35,14 +30,8 @@ export default function AppLayout() {
             open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
           )}
         >
-          <div className="hidden lg:flex items-center gap-2 px-6 h-14 border-b border-border">
-            <div className="h-9 w-9 rounded-xl bg-gradient-brand flex items-center justify-center shadow-glow">
-              <Sparkles className="h-5 w-5 text-brand-foreground" />
-            </div>
-            <div>
-              <div className="font-semibold tracking-tight leading-none">SmartRecruit AI</div>
-              <div className="text-[11px] text-muted-foreground mt-1">Hiring OS</div>
-            </div>
+          <div className="hidden lg:flex items-center px-6 h-14 border-b border-border">
+            <img src="/synlumex-logo.png.png" alt="Synlumex" className="h-8 object-contain" />
           </div>
 
           <nav className="p-3 space-y-1">
