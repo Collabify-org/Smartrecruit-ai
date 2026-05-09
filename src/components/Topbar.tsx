@@ -33,13 +33,9 @@ export default function Topbar() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.pageYOffset > 20);
-    };
-
+    const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -49,27 +45,38 @@ export default function Topbar() {
     <header
       className={`sticky top-0 z-20 flex items-center justify-between px-4 lg:px-8 border-b transition-all duration-300 ${
         scrolled
-          ? "h-12 bg-white/5 backdrop-blur-3xl border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+          ? "h-12 bg-white/10 backdrop-blur-3xl border-white/10 shadow-lg"
           : "h-14 bg-background/70 backdrop-blur-xl border-border"
       }`}
     >
 
-      {/* LEFT - LOGO */}
-      <div className="flex items-center min-w-[180px] gap-3">
+      {/* LEFT - LOGO MORPH */}
+      <div className="flex items-center min-w-[140px] relative">
 
-        {/* LOGO */}
+        {/* FULL LOGO */}
         <img
           src="/synlumex-logo.png"
           alt="Synlumex"
           onClick={() => navigate("/")}
           className={`cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 ${
-            scrolled ? "h-8 scale-90" : "h-10 scale-100"
+            scrolled ? "opacity-0 scale-90 w-0" : "opacity-100 h-10"
+          }`}
+        />
+
+        {/* ICON LOGO */}
+        <img
+          src="/synlumex-icon.png"
+          alt="Synlumex"
+          onClick={() => navigate("/")}
+          className={`absolute left-0 cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 ${
+            scrolled ? "opacity-100 h-8" : "opacity-0 scale-90 w-0"
           } drop-shadow-[0_0_14px_rgba(99,102,241,0.35)]`}
         />
+
       </div>
 
       {/* CENTER NAV */}
-      <div className="hidden md:flex items-center gap-6 text-sm font-medium relative">
+      <div className="hidden md:flex items-center gap-7 text-sm font-medium">
 
         <button
           onClick={() => navigate("/app")}
@@ -121,7 +128,7 @@ export default function Topbar() {
         </kbd>
       </div>
 
-      {/* RIGHT USER */}
+      {/* USER */}
       <div className="flex items-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
