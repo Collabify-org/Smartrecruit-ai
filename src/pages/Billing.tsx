@@ -26,6 +26,8 @@ export default function Billing() {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
 
+  const current = PLANS.find((p) => p.id === plan)!;
+
   const setNewPlan = (p: string) => {
     setPlan(p);
     lsSet("plan", p);
@@ -39,19 +41,73 @@ export default function Billing() {
     toast.success("Subscription cancelled");
   };
 
-  const downloadInvoice = (inv: typeof INVOICES[number]) => {
-    const text = `SmartRecruit AI\nInvoice ${inv.id}\nDate: ${inv.date}\nAmount: ${inv.amount}\nStatus: ${inv.status}\n`;
-    const blob = new Blob([text], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${inv.id}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Invoice downloaded");
-  };
+  const downloadInvoice = async (inv: typeof INVOICES[number]) => {
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    document.head.appendChild(script);
 
-  const current = PLANS.find((p) => p.id === plan)!;
+    script.onload = () => {
+      const { jsPDF } = (window as any).jspdf;
+      const doc = new jsPDF();
+
+      doc.setFillColor(79, 70, 229);
+      doc.rect(0, 0, 210, 45, "F");
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(22);
+      doc.setFont("helvetica", "bold");
+      doc.text("SmartRecruit AI", 14, 20);
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "normal");
+      doc.text("Hiring OS — Invoice Receipt", 14, 30);
+
+      doc.setFillColor(245, 243, 255);
+      doc.rect(0, 45, 210, 20, "F");
+      doc.setTextColor(79, 70, 229);
+      doc.setFontSize(13);
+      doc.setFont("helvetica", "bold");
+      doc.text(`Invoice ${inv.id}`, 14, 58);
+
+      const rows = [
+        ["Invoice ID", inv.id],
+        ["Date", inv.date],
+        ["Plan", `${current.name} Plan`],
+        ["Billing Period", "Monthly"],
+        ["Status", inv.status],
+      ];
+
+      let y = 85;
+      rows.forEach(([label, value]) => {
+        doc.setTextColor(107, 114, 128);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text(label, 14, y);
+        doc.setTextColor(26, 26, 26);
+        doc.setFont("helvetica", "bold");
+        doc.text(value, 100, y);
+        doc.setDrawColor(240, 240, 240);
+        doc.line(14, y + 4, 196, y + 4);
+        y += 16;
+      });
+
+      doc.setFillColor(245, 243, 255);
+      doc.rect(14, y + 5, 182, 20, "F");
+      doc.setTextColor(79, 70, 229);
+      doc.setFontSize(13);
+      doc.setFont("helvetica", "bold");
+      doc.text("Total Amount", 20, y + 18);
+      doc.text(inv.amount, 170, y + 18);
+
+      doc.setTextColor(156, 163, 175);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text("SmartRecruit AI · smartrecruit-ai-seven.vercel.app", 105, 280, { align: "center" });
+      doc.text("Thank you for your business!", 105, 286, { align: "center" });
+
+      doc.save(`${inv.id}.pdf`);
+      toast.success("Invoice downloaded!");
+    };
+  };
 
   return (
     <>
