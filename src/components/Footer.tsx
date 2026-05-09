@@ -10,7 +10,7 @@ export default function Footer() {
             <div className="h-8 w-8 rounded-lg bg-gradient-brand flex items-center justify-center shadow-glow">
               <Sparkles className="h-4 w-4 text-brand-foreground" />
             </div>
-            <span className="font-semibold tracking-tight">SmartRecruit AI</span>
+            <span className="font-semibold tracking-tight">Synlumex</span>
           </div>
           <p className="text-sm text-muted-foreground mt-3 max-w-xs">
             The AI hiring operating system for modern startups and recruiters.
@@ -41,7 +41,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="max-w-6xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
-          <div>© {new Date().getFullYear()} SmartRecruit AI. All rights reserved.</div>
+          <div>© {new Date().getFullYear()} Synlumex. All rights reserved.</div>
           <div>Built for high-velocity hiring teams.</div>
         </div>
       </div>
