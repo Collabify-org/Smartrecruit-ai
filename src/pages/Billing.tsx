@@ -14,13 +14,6 @@ const PLANS = [
   { id: "enterprise", name: "Enterprise", price: "Custom", features: ["Unlimited JDs", "Unlimited analyses", "Unlimited interview sets", "Dedicated support"] },
 ];
 
-const INVOICES = [
-  { id: "INV-2026-004", date: "Apr 1, 2026", amount: "₹2,999", status: "Paid" },
-  { id: "INV-2026-003", date: "Mar 1, 2026", amount: "₹2,999", status: "Paid" },
-  { id: "INV-2026-002", date: "Feb 1, 2026", amount: "₹2,999", status: "Paid" },
-  { id: "INV-2026-001", date: "Jan 1, 2026", amount: "₹2,999", status: "Paid" },
-];
-
 export default function Billing() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -45,74 +38,6 @@ export default function Billing() {
   };
 
   const current = PLANS.find((p) => p.id === profile?.plan) || PLANS[0];
-
-  const downloadInvoice = async (inv: typeof INVOICES[number]) => {
-    const script = document.createElement("script");
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-    document.head.appendChild(script);
-
-    script.onload = () => {
-      const { jsPDF } = (window as any).jspdf;
-      const doc = new jsPDF();
-
-      doc.setFillColor(79, 70, 229);
-      doc.rect(0, 0, 210, 45, "F");
-
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(22);
-      doc.setFont("helvetica", "bold");
-      doc.text("SmartRecruit AI", 14, 20);
-      doc.setFontSize(11);
-      doc.setFont("helvetica", "normal");
-      doc.text("Hiring OS — Invoice Receipt", 14, 30);
-
-      doc.setFillColor(245, 243, 255);
-      doc.rect(0, 45, 210, 20, "F");
-      doc.setTextColor(79, 70, 229);
-      doc.setFontSize(13);
-      doc.setFont("helvetica", "bold");
-      doc.text(`Invoice ${inv.id}`, 14, 58);
-
-      const rows = [
-        ["Invoice ID", inv.id],
-        ["Date", inv.date],
-        ["Plan", `${current.name} Plan`],
-        ["Billing Period", "Monthly"],
-        ["Status", inv.status],
-      ];
-
-      let y = 85;
-      rows.forEach(([label, value]) => {
-        doc.setTextColor(107, 114, 128);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(10);
-        doc.text(label, 14, y);
-        doc.setTextColor(26, 26, 26);
-        doc.setFont("helvetica", "bold");
-        doc.text(value, 100, y);
-        doc.setDrawColor(240, 240, 240);
-        doc.line(14, y + 4, 196, y + 4);
-        y += 16;
-      });
-
-      doc.setFillColor(245, 243, 255);
-      doc.rect(14, y + 5, 182, 20, "F");
-      doc.setTextColor(79, 70, 229);
-      doc.setFontSize(13);
-      doc.setFont("helvetica", "bold");
-      doc.text("Total Amount", 20, y + 18);
-      doc.text(inv.amount, 170, y + 18);
-
-      doc.setTextColor(156, 163, 175);
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      doc.text("SmartRecruit AI · smartrecruit-ai-seven.vercel.app", 105, 280, { align: "center" });
-      doc.text("Thank you for your business!", 105, 286, { align: "center" });
-
-      doc.save(`${inv.id}.pdf`);
-      toast.success("Invoice downloaded!");
-    };
-  };
 
   if (loading) {
     return (
@@ -151,7 +76,6 @@ export default function Billing() {
         </Card>
       </div>
 
-      {/* ✅ REAL usage from Supabase */}
       <Card className="p-6 shadow-soft-sm mb-8">
         <h3 className="font-semibold mb-4">Usage this month</h3>
         <div className="space-y-5">
@@ -163,22 +87,10 @@ export default function Billing() {
 
       <Card className="p-6 shadow-soft-sm">
         <h3 className="font-semibold mb-4">Billing history</h3>
-        <div className="divide-y divide-border">
-          {INVOICES.map((inv) => (
-            <div key={inv.id} className="flex items-center justify-between py-3">
-              <div>
-                <div className="font-medium text-sm">{inv.id}</div>
-                <div className="text-xs text-muted-foreground">{inv.date}</div>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-muted-foreground">{inv.amount}</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-success/10 text-success font-medium">{inv.status}</span>
-                <Button variant="ghost" size="sm" onClick={() => downloadInvoice(inv)}>
-                  <Download className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
+        <div className="flex flex-col items-center justify-center py-8 text-center gap-2">
+          <Download className="h-8 w-8 text-muted-foreground/40" />
+          <p className="text-sm font-medium text-muted-foreground">Your invoices are sent to your registered email</p>
+          <p className="text-xs text-muted-foreground">Need a copy? Contact us at <span className="text-brand font-medium">support@smartrecruitai.com</span></p>
         </div>
       </Card>
 
