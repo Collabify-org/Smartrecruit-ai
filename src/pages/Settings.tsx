@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,44 +8,117 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { AlertTriangle, KeyRound, Save } from "lucide-react";
-import { lsGet, lsSet } from "@/lib/storage";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Profile { name: string; email: string; company: string; }
 interface Notifs { product: boolean; weekly: boolean; billing: boolean; }
 
 export default function Settings() {
-  const [profile, setProfile] = useState<Profile>(() => lsGet("profile", { name: "Alex Recruiter", email: "alex@acme.com", company: "Acme Inc." }));
-  const [notifs, setNotifs] = useState<Notifs>(() => lsGet("notifs", { product: true, weekly: true, billing: true }));
+  const [profile, setProfile] = useState<Profile>({ name: "", email: "", company: "" });
+  const [notifs, setNotifs] = useState<Notifs>({ product: true, weekly: true, billing: true });
+  const [loading, setLoading] = useState(true);
   const [pwOpen, setPwOpen] = useState(false);
   const [delOpen, setDelOpen] = useState(false);
-  const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
+  const [pw, setPw] = useState({ next: "", confirm: "" });
 
-  const saveProfile = () => {
-    lsSet("profile", profile);
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
+
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    if (data) {
+      setProfile({
+        name: data.full_name || "",
+        email: user.email || "",
+        company: data.company_name || "",
+      });
+      setNotifs({
+        product: data.notif_product ?? true,
+        weekly: data.notif_weekly ?? true,
+        billing: data.notif_billing ?? true,
+      });
+    }
+    setLoading(false);
+  };
+
+  const saveProfile = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        full_name: profile.name,
+        company_name: profile.company,
+      })
+      .eq("id", user.id);
+
+    if (error) return toast.error("Failed to save profile");
     toast.success("Profile saved");
   };
 
-  const setNotif = (k: keyof Notifs, v: boolean) => {
+  const setNotif = async (k: keyof Notifs, v: boolean) => {
     const updated = { ...notifs, [k]: v };
     setNotifs(updated);
-    lsSet("notifs", updated);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase
+      .from("profiles")
+      .update({
+        notif_product: updated.product,
+        notif_weekly: updated.weekly,
+        notif_billing: updated.billing,
+      })
+      .eq("id", user.id);
   };
 
-  const changePassword = () => {
-    if (!pw.current || !pw.next) return toast.error("Fill all fields");
+  const changePassword = async () => {
+    if (!pw.next) return toast.error("Enter a new password");
     if (pw.next.length < 8) return toast.error("Password must be 8+ characters");
     if (pw.next !== pw.confirm) return toast.error("Passwords don't match");
-    setPw({ current: "", next: "", confirm: "" });
+
+    const { error } = await supabase.auth.updateUser({ password: pw.next });
+    if (error) return toast.error("Failed to update password");
+
+    setPw({ next: "", confirm: "" });
     setPwOpen(false);
-    toast.success("Password changed");
+    toast.success("Password updated successfully");
   };
 
-  const deleteAccount = () => {
-    localStorage.clear();
+  const deleteAccount = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Delete profile row first
+    await supabase.from("profiles").delete().eq("id", user.id);
+
+    // Sign out
+    await supabase.auth.signOut();
+
     setDelOpen(false);
     toast.success("Account deleted");
     setTimeout(() => (window.location.href = "/"), 800);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-muted-foreground text-sm">Loading settings...</div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -55,9 +128,18 @@ export default function Settings() {
         <Card className="p-6 shadow-soft-sm">
           <h3 className="font-semibold mb-4">Profile</h3>
           <div className="grid sm:grid-cols-2 gap-4">
-            <div><Label className="text-xs text-muted-foreground">Full name</Label><Input value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} className="mt-1.5" /></div>
-            <div><Label className="text-xs text-muted-foreground">Email</Label><Input value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} type="email" className="mt-1.5" /></div>
-            <div className="sm:col-span-2"><Label className="text-xs text-muted-foreground">Company name</Label><Input value={profile.company} onChange={(e) => setProfile({ ...profile, company: e.target.value })} className="mt-1.5" /></div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Full name</Label>
+              <Input value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} className="mt-1.5" />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Email</Label>
+              <Input value={profile.email} disabled className="mt-1.5 opacity-60 cursor-not-allowed" />
+            </div>
+            <div className="sm:col-span-2">
+              <Label className="text-xs text-muted-foreground">Company name</Label>
+              <Input value={profile.company} onChange={(e) => setProfile({ ...profile, company: e.target.value })} className="mt-1.5" />
+            </div>
           </div>
           <div className="mt-5 flex justify-end">
             <Button onClick={saveProfile}><Save className="h-4 w-4 mr-1.5" />Save changes</Button>
@@ -93,11 +175,19 @@ export default function Settings() {
 
       <Dialog open={pwOpen} onOpenChange={setPwOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Change password</DialogTitle><DialogDescription>Use a strong password with 8+ characters.</DialogDescription></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Change password</DialogTitle>
+            <DialogDescription>Use a strong password with 8+ characters.</DialogDescription>
+          </DialogHeader>
           <div className="space-y-3">
-            <div><Label className="text-xs">Current password</Label><Input type="password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} className="mt-1" /></div>
-            <div><Label className="text-xs">New password</Label><Input type="password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} className="mt-1" /></div>
-            <div><Label className="text-xs">Confirm new password</Label><Input type="password" value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} className="mt-1" /></div>
+            <div>
+              <Label className="text-xs">New password</Label>
+              <Input type="password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} className="mt-1" />
+            </div>
+            <div>
+              <Label className="text-xs">Confirm new password</Label>
+              <Input type="password" value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} className="mt-1" />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPwOpen(false)}>Cancel</Button>
