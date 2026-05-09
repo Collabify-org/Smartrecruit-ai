@@ -17,7 +17,7 @@ export default function ProductDemos() {
       <div className="max-w-6xl mx-auto px-6 py-20 sm:py-24">
         <div className="text-center max-w-2xl mx-auto">
           <div className="text-xs uppercase tracking-widest text-brand font-semibold">Live product demos</div>
-          <h2 className="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight">See SmartRecruit AI in motion</h2>
+          <h2 className="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight">See Synlumex in motion</h2>
           <p className="mt-3 text-muted-foreground">Three workflows. Zero busywork. Every demo loops automatically.</p>
         </div>
 
@@ -25,7 +25,7 @@ export default function ProductDemos() {
           <DemoRow
             tag="A · Custom Template"
             title="Upload your company template, generate on-brand JDs forever."
-            desc="SmartRecruit ingests your existing JD format once — sections, tone, structure — then writes every future role in your exact style. Export to .docx in one click."
+            desc="Synlumex ingests your existing JD format once — sections, tone, structure — then writes every future role in your exact style. Export to .docx in one click."
             bullets={[
               "Upload your company JD template (.docx)",
               "AI mirrors your sections + headings + tone",
@@ -63,7 +63,7 @@ export default function ProductDemos() {
             reverse
             tag="D · Interview Questions"
             title="JD uploaded? Your phone screening sheet is ready."
-            desc="Paste any job description and SmartRecruit instantly generates a complete phone screening question sheet — candidate details, role-specific questions, CTC, notice period, and feedback fields. Ready to use on your next call."
+            desc="Paste any job description and Synlumexinstantly generates a complete phone screening question sheet — candidate details, role-specific questions, CTC, notice period, and feedback fields. Ready to use on your next call."
             bullets={[
               "Role-specific questions generated from JD",
               "Candidate name, experience, CTC fields included",
@@ -127,7 +127,7 @@ function DemoCustomTemplate() {
   // 4-step loop: upload → parsed → generating → ready
   const step = useLoopingStep(4, 1700);
   return (
-    <DemoFrame title="app.smartrecruit.ai/jd-generator · Custom Template">
+    <DemoFrame title="Synlumex/jd-generator · Custom Template">
       <div className="bg-gradient-subtle p-5 min-h-[360px] space-y-3">
         {/* Upload */}
         <div className={`rounded-lg border-2 border-dashed p-3 flex items-center gap-3 transition-all duration-500 ${step >= 1 ? "border-success/40 bg-success/5" : "border-border bg-background"}`}>
@@ -195,7 +195,7 @@ function DemoSmartFormat() {
   const text = "Senior Product Engineer";
   const typed = step === 0 ? text.slice(0, 12) : text;
   return (
-    <DemoFrame title="app.smartrecruit.ai/jd-generator · Smart Format">
+    <DemoFrame title="Synlumex/jd-generator · Smart Format">
       <div className="bg-gradient-subtle p-5 min-h-[360px] space-y-3">
         <div className="rounded-lg border border-border bg-background p-3">
           <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1.5 font-semibold">Role</div>
@@ -260,7 +260,7 @@ function DemoTalentIntelligence() {
     { icon: Building2, label: "Similar hirers", value: "38", bar: 70 },
   ];
   return (
-    <DemoFrame title="app.smartrecruit.ai/talent-intelligence">
+    <DemoFrame title="Synlumex/talent-intelligence">
       <div className="bg-gradient-subtle p-5 min-h-[360px] space-y-3">
         {/* Pasted JD */}
         <div className="rounded-lg border border-border bg-background p-3">
@@ -329,7 +329,7 @@ function DemoInterviewQuestions() {
     ["Location", "Source"],
   ];
   return (
-    <DemoFrame title="app.smartrecruit.ai/interview-questions · Phone Screen Sheet">
+    <DemoFrame title="Synlumex/interview-questions · Phone Screen Sheet">
       <div className="bg-gradient-subtle p-5 min-h-[360px] space-y-3">
         <div className="rounded-lg border border-border bg-background p-3 flex items-center gap-2">
           <Phone className="h-3.5 w-3.5 text-brand" />
