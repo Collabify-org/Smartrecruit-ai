@@ -122,7 +122,74 @@ export default function Index() {
             </div>
           </div>
         </section>
+        
+{/* VIDEO WALKTHROUGH */}
+        <section className="border-t border-border bg-card">
+          <div className="max-w-6xl mx-auto px-6 py-20">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="text-xs uppercase tracking-widest text-brand font-semibold">2-minute walkthrough</div>
+                <h2 className="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight leading-tight">
+                  See how we remove manual hiring work — in seconds
+                </h2>
+                <p className="mt-4 text-muted-foreground text-sm leading-relaxed">
+                  A full walkthrough of all 3 features. No fluff, no slides — just the real product doing real work.
+                </p>
+                <div className="mt-8 space-y-6">
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-brand/10 text-brand flex items-center justify-center shrink-0 mt-0.5">
+                      <FileText className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm">JD Generator</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">Write a fully structured, on-brand job description in under 60 seconds — no copy-pasting, no reformatting.</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-brand/10 text-brand flex items-center justify-center shrink-0 mt-0.5">
+                      <Brain className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm">Talent Intelligence</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">Paste any JD and instantly get salary benchmarks, Boolean strings, and a ready-to-execute hiring strategy.</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-brand/10 text-brand flex items-center justify-center shrink-0 mt-0.5">
+                      <Phone className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm">Interview Questions</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">Get a complete phone screening sheet with role-specific questions and candidate fields — download as .docx instantly.</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-8 flex items-center gap-3">
+                  <a href="#contact">
+                    <Button className="bg-gradient-brand text-brand-foreground shadow-glow">
+                      <Calendar className="mr-2 h-4 w-4" /> Book a live demo
+                    </Button>
+                  </a>
+                  <a href="#demos">
+                    <Button variant="outline">Explore features</Button>
+                  </a>
+                </div>
+              </div>
+              <div className="rounded-2xl overflow-hidden border border-border shadow-soft-lg bg-secondary aspect-video flex items-center justify-center">
+                <div className="text-center space-y-3 px-6">
+                  <div className="h-14 w-14 rounded-full bg-brand/10 text-brand flex items-center justify-center mx-auto">
+                    <ArrowRight className="h-6 w-6" />
+                  </div>
+                  <div className="font-semibold text-sm">Video coming soon</div>
+                  <div className="text-xs text-muted-foreground">We're recording the walkthrough — check back shortly or book a live demo below.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
+        {/* PRODUCT DEMOS (3 looping) */}
+        <ProductDemos />
         {/* PRODUCT DEMOS (3 looping) */}
         <ProductDemos />
 
