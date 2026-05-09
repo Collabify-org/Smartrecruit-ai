@@ -85,6 +85,7 @@ export default function Billing() {
         <div className="space-y-5">
           <UsageRow label="JDs generated" used={42} limit={plan === "growth" || plan === "scale" ? Infinity : 10} />
           <UsageRow label="Talent analyses" used={18} limit={plan === "scale" ? Infinity : plan === "growth" ? 100 : 5} />
+          <UsageRow label="Interview question sets" used={7} limit={plan === "scale" ? Infinity : plan === "growth" ? 50 : 10} />
         </div>
       </Card>
 
