@@ -33,7 +33,7 @@ export default function Index() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "SmartRecruit AI — AI Job Description Generator, Talent Intelligence & Interview Questions | by Collabify";
+    document.title = "Synlumex — AI Job Description Generator, Talent Intelligence & Interview Questions | by Collabify";
   }, []);
 
   return (
@@ -41,12 +41,17 @@ export default function Index() {
       {/* NAVBAR */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2" aria-label="SmartRecruit AI home">
-            <div className="h-9 w-9 rounded-xl bg-gradient-brand flex items-center justify-center shadow-glow">
-              <Sparkles className="h-5 w-5 text-brand-foreground" />
-            </div>
-            <span className="font-semibold tracking-tight">SmartRecruit AI</span>
-          </Link>
+          <Link to="/" className="flex items-center gap-3" aria-label="Synlumex home">
+  <img
+    src="/synlumex-logo.png.png"
+    alt="Synlumex"
+    className="h-10 w-auto object-contain"
+  />
+
+  <span className="text-xl font-bold tracking-tight">
+    Synlumex
+  </span>
+</Link>
           <nav className="hidden lg:flex items-center gap-7" aria-label="Primary">
             {NAV.map((n) => (
               <a key={n.label} href={n.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">{n.label}</a>
@@ -97,7 +102,7 @@ export default function Index() {
               Hire 10× faster with the <span className="text-gradient-brand">AI hiring OS</span> built for startups
             </h1>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              SmartRecruit AI gives founders, recruiters and lean hiring teams three superpowers:
+              Synlumex gives founders, recruiters and lean hiring teams three superpowers:
               an <strong className="text-foreground font-medium">AI Job Description Generator</strong> that writes JDs in your own format,
               a <strong className="text-foreground font-medium">Talent Intelligence Engine</strong> that decodes salaries, skills and sourcing in seconds,
               and an <strong className="text-foreground font-medium">Interview Questions</strong> generator that creates role-specific phone screening sheets instantly.
@@ -221,11 +226,11 @@ export default function Index() {
             icon={FileText}
             title="Stop rewriting JDs from scratch."
             pain="Founders spend hours rewriting the same job descriptions in different formats. Recruiters copy-paste from old docs."
-            solution="Upload your company's JD template once. SmartRecruit learns your structure, tone and sections — and generates every future JD in the same format. Or use SmartRecruit's smart format mode."
+            solution="Upload your company's JD template once. Synlumex learns your structure, tone and sections — and generates every future JD in the same format. Or use Synlumex's smart format mode."
             bullets={[
               "Upload your company JD template once",
               "Generate future JDs in your exact format",
-              "SmartRecruit Smart Format mode (best practices)",
+              "Synlumex Smart Format mode (best practices)",
               "Export to editable Word (.docx)",
             ]}
             visual={
@@ -258,7 +263,7 @@ export default function Index() {
             icon={Brain}
             title="Decode the talent market in seconds."
             pain="You're hiring blind: no idea what to pay, who else is hiring, or which keywords actually surface candidates."
-            solution="Drop in any JD. SmartRecruit returns salary benchmarks, similar companies hiring the same role, trending skills, Boolean sourcing strings and a recommended hiring strategy."
+            solution="Drop in any JD. Synlumex returns salary benchmarks, similar companies hiring the same role, trending skills, Boolean sourcing strings and a recommended hiring strategy."
             bullets={[
               "Salary benchmarks by role, level and region",
               "Similar companies hiring the same role",
@@ -287,7 +292,7 @@ export default function Index() {
             icon={Phone}
             title="Walk into every call fully prepared."
             pain="HR teams scramble to prepare screening questions for every new role. Generic questions miss role-specific depth."
-            solution="Paste any JD and SmartRecruit generates a complete phone screening sheet — role-specific questions, candidate detail fields, CTC, notice period, feedback section — ready in seconds."
+            solution="Paste any JD and Synlumex generates a complete phone screening sheet — role-specific questions, candidate detail fields, CTC, notice period, feedback section — ready in seconds."
             bullets={[
               "Role-specific questions generated from JD",
               "Complete candidate detail fields included",
@@ -345,7 +350,7 @@ export default function Index() {
           <SectionHeader eyebrow="Loved by hiring teams" title="What founders and recruiters say" />
           <div className="grid md:grid-cols-3 gap-5 mt-10">
             <Testimonial
-              quote="We replaced three hiring tools with SmartRecruit. Our JDs went from 4 hours to 4 minutes."
+              quote="We replaced three hiring tools with Synlumex. Our JDs went from 4 hours to 4 minutes."
               name="Sara Linde"
               role="Head of Talent, Northwind"
             />
@@ -382,15 +387,15 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-5 mt-10">
             <AnswerCard
               h="What is talent intelligence software?"
-              p="Talent intelligence software analyzes labor market data — salaries, skills, hiring trends and competitor activity — to help recruiters make better hiring decisions. SmartRecruit turns any job description into an instant market briefing."
+              p="Talent intelligence software analyzes labor market data — salaries, skills, hiring trends and competitor activity — to help recruiters make better hiring decisions. Synlumex turns any job description into an instant market briefing."
             />
             <AnswerCard
               h="How can AI help hiring teams?"
-              p="AI removes the busywork: writing JDs, benchmarking salaries, and generating sourcing keywords. SmartRecruit combines an AI JD generator with a talent intelligence engine so small teams can hire like a 10-person recruiting org."
+              p="AI removes the busywork: writing JDs, benchmarking salaries, and generating sourcing keywords. Synlumex combines an AI JD generator with a talent intelligence engine so small teams can hire like a 10-person recruiting org."
             />
             <AnswerCard
               h="How do I create a job description with AI?"
-              p="Upload your company's JD template (or use SmartRecruit's smart format), enter the role, seniority and location, then generate. You'll get a structured, on-brand JD ready to export to Word in under 60 seconds."
+              p="Upload your company's JD template (or use Synlumex's smart format), enter the role, seniority and location, then generate. You'll get a structured, on-brand JD ready to export to Word in under 60 seconds."
             />
           </div>
         </section>
@@ -411,13 +416,13 @@ export default function Index() {
         <section id="faq" className="max-w-3xl mx-auto px-6 py-24">
           <SectionHeader eyebrow="FAQ" title="Frequently asked questions" />
           <Accordion type="single" collapsible className="mt-8">
-            <FaqItem q="How does the AI job description generator work?" a="The AI job description generator turns a role brief into a polished JD in under 60 seconds. Upload your company JD template or use SmartRecruit Smart Format, then enter the role name, experience, skills and work mode. SmartRecruit AI produces a structured, on-brand JD ready to edit, copy or export as a Word .docx file." />
-            <FaqItem q="Can I upload my own template?" a="You can upload your own company JD template once and SmartRecruit AI will mirror its sections, headings and tone on every future JD generation, keeping every role on-brand without manual reformatting." />
-            <FaqItem q="What is talent intelligence software?" a="Talent intelligence software analyzes labor market data including salaries, skills, hiring trends and competitor activity to help recruiters make better hiring decisions. SmartRecruit AI turns any job description into an instant market briefing with salary ranges, Boolean search strings, and sourcing recommendations." />
-            <FaqItem q="How does the Interview Questions generator work?" a="The Interview Questions generator instantly creates a complete phone screening sheet from any JD. Paste a job description into SmartRecruit AI and it produces role-specific behavioural and technical questions plus candidate detail fields including CTC, notice period, location and Level 1 feedback — all downloadable as .docx in one click." />
-            <FaqItem q="How accurate are the salary insights?" a="The salary insights in SmartRecruit AI are based on current market data for the specific role, seniority level and location, covering India, USA and Gulf markets. Most teams find our salary bands within 5–8% of their actual offers, and the dataset is refreshed regularly to reflect current hiring trends." />
-            <FaqItem q="Is there a free trial?" a="Every SmartRecruit AI plan includes a 3-day free trial with no credit card required. You get full access to JD generation, talent intelligence and interview questions during the trial, and can cancel anytime." />
-            <FaqItem q="Does SmartRecruit AI support hiring agencies?" a="The Agency and Enterprise plan supports hiring agencies with unlimited JD generations, talent intelligence analyses and interview question sets, plus unlimited user seats, white label, API access and a dedicated account manager. Custom pricing is tailored to your team size." />
+            <FaqItem q="How does the AI job description generator work?" a="The AI job description generator turns a role brief into a polished JD in under 60 seconds. Upload your company JD template or use Synlumex Smart Format, then enter the role name, experience, skills and work mode. Synlumex produces a structured, on-brand JD ready to edit, copy or export as a Word .docx file." />
+            <FaqItem q="Can I upload my own template?" a="You can upload your own company JD template once and Synlumex will mirror its sections, headings and tone on every future JD generation, keeping every role on-brand without manual reformatting." />
+            <FaqItem q="What is talent intelligence software?" a="Talent intelligence software analyzes labor market data including salaries, skills, hiring trends and competitor activity to help recruiters make better hiring decisions. Synlumex turns any job description into an instant market briefing with salary ranges, Boolean search strings, and sourcing recommendations." />
+            <FaqItem q="How does the Interview Questions generator work?" a="The Interview Questions generator instantly creates a complete phone screening sheet from any JD. Paste a job description into Synlumex and it produces role-specific behavioural and technical questions plus candidate detail fields including CTC, notice period, location and Level 1 feedback — all downloadable as .docx in one click." />
+            <FaqItem q="How accurate are the salary insights?" a="The salary insights in Synlumex are based on current market data for the specific role, seniority level and location, covering India, USA and Gulf markets. Most teams find our salary bands within 5–8% of their actual offers, and the dataset is refreshed regularly to reflect current hiring trends." />
+            <FaqItem q="Is there a free trial?" a="Every Synlumex plan includes a 3-day free trial with no credit card required. You get full access to JD generation, talent intelligence and interview questions during the trial, and can cancel anytime." />
+            <FaqItem q="Does Synlumex support hiring agencies?" a="The Agency and Enterprise plan supports hiring agencies with unlimited JD generations, talent intelligence analyses and interview question sets, plus unlimited user seats, white label, API access and a dedicated account manager. Custom pricing is tailored to your team size." />
           </Accordion>
         </section>
 
@@ -429,7 +434,7 @@ export default function Index() {
               <h2 className="text-3xl font-semibold tracking-tight">Book a demo or join the waitlist</h2>
               <p className="mt-3 text-muted-foreground">Get a personalized walkthrough, or be the first to hear about new features. We reply within 2 hours on weekdays.</p>
               <div className="mt-6 space-y-3 text-sm">
-                <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-brand" /> hello@smartrecruit.ai</div>
+                <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-brand" /> hello@Synlumex.ai</div>
                 <div className="flex items-center gap-2"><Headphones className="h-4 w-4 text-brand" /> Avg. reply: under 2 hours</div>
                 <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-brand" /> GDPR-compliant data handling</div>
               </div>
@@ -447,7 +452,7 @@ export default function Index() {
         <section className="max-w-6xl mx-auto px-6 pb-24">
           <div className="rounded-2xl bg-gradient-brand text-brand-foreground p-10 text-center shadow-glow">
             <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">Ready to hire smarter?</h2>
-            <p className="mt-2 opacity-90 max-w-xl mx-auto text-sm sm:text-base">Join hundreds of teams using SmartRecruit AI to generate JDs, decode talent markets, and prepare interview questions — all in one place.</p>
+            <p className="mt-2 opacity-90 max-w-xl mx-auto text-sm sm:text-base">Join hundreds of teams using Synlumex to generate JDs, decode talent markets, and prepare interview questions — all in one place.</p>
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to={primaryCta}>
                 <Button size="lg" className="bg-background text-foreground hover:bg-background/90">
@@ -640,7 +645,7 @@ function PricingPlans({ primaryCta, primaryCtaLabel }: { primaryCta: string; pri
             "10 JD generations per month",
             "10 Talent Intelligence analyses per month",
             "10 Interview question sets per month",
-            "SmartRecruit format JD",
+            "Synlumex format JD",
             "Download as .docx",
             "1 user seat",
             "Email support",
@@ -659,7 +664,7 @@ function PricingPlans({ primaryCta, primaryCtaLabel }: { primaryCta: string; pri
             "50 JD generations per month",
             "50 Talent Intelligence analyses per month",
             "50 Interview question sets per month",
-            "SmartRecruit format + Company template upload",
+            "Synlumex format + Company template upload",
             "Download as .docx",
             "3 user seats",
             "Full salary intelligence",
