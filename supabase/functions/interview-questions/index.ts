@@ -1,54 +1,97 @@
-import { admin, authUser, callGemini, checkAndIncrement, corsHeaders, json } from "../_shared/usage.ts";
+// supabase/functions/interview-questions/index.ts
+import {
+  authUser,
+  callLLM,
+  checkAndIncrement,
+  corsHeaders,
+  extractJSON,
+  jsonResponse,
+} from "../_shared/usage.ts";
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+interface InterviewPayload {
+  role?: string;
+  seniority?: string;
+  skills?: string[];
+  count?: number;
+  focus?: string;
+}
+
+interface InterviewQuestion {
+  question: string;
+  category: string;
+  difficulty: "easy" | "medium" | "hard";
+  ideal_answer: string;
+}
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
   try {
-    const user = await authUser(req);
-    if (!user) return json({ error: "Unauthorized" }, 401);
+    const { user, error: authErr } = await authUser(req);
+    if (!user) return jsonResponse({ error: authErr ?? "Unauthorized" }, 401);
 
-    const { jd } = await req.json();
-    if (!jd || jd.length < 30) return json({ error: "JD too short" }, 400);
+    let payload: InterviewPayload = {};
+    try {
+      payload = await req.json();
+    } catch {
+      return jsonResponse({ error: "Invalid JSON body" }, 400);
+    }
 
-    const gate = await checkAndIncrement(user.id, "usage_interview");
-    if (!gate.ok) return json({ error: gate.message }, gate.status);
+    if (!payload.role) {
+      return jsonResponse({ error: "Field 'role' is required" }, 400);
+    }
 
-    const prompt = `You are a senior recruiter creating a phone-screening sheet for the role described below. Output clean Markdown with this exact structure:
+    const count = Math.min(Math.max(payload.count ?? 8, 1), 20);
 
-# Phone Screen Sheet — <role name>
+    const usage = await checkAndIncrement(user.id, "usage_interview");
+    if (!usage.ok) {
+      return jsonResponse({ error: usage.error ?? "Usage limit reached" }, 403);
+    }
 
-## Candidate Details
-- Name:
-- Phone:
-- Email:
-- Current company:
-- Current role:
-- Years of experience:
-- Notice period:
-- Current CTC:
-- Expected CTC:
-- Location / willing to relocate:
-- Reason for change:
+    const system =
+      "You are a senior interviewer. Return ONLY valid minified JSON. No markdown, no commentary.";
 
-## Screening Questions (role-specific)
-Generate 10–12 phone-screen questions that are specific to the role, skills, and seniority in the JD. Mix background, motivation, technical depth, and situational questions. Number them.
+    const userPrompt = `Generate ${count} interview questions for:
+Role: ${payload.role}
+Seniority: ${payload.seniority ?? "Mid"}
+Skills: ${(payload.skills ?? []).join(", ") || "general"}
+Focus: ${payload.focus ?? "balanced (technical + behavioral)"}
 
-## Recruiter Notes
-Leave space for notes and a final recommendation (Proceed / Hold / Reject).
+Return JSON exactly in this shape:
+{
+  "questions": [
+    {
+      "question": "string",
+      "category": "technical|behavioral|system-design|culture",
+      "difficulty": "easy|medium|hard",
+      "ideal_answer": "string (2-4 sentences)"
+    }
+  ]
+}`;
 
-Job Description:
-${jd}`;
-
-    const questions = await callGemini(prompt);
-
-    await admin().from("interview_history").insert({
-      user_id: user.id,
-      jd_input: jd,
-      questions,
+    const raw = await callLLM({
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.6,
+      maxTokens: 2200,
+      jsonMode: true,
     });
 
-    return json({ questions });
+    const parsed = extractJSON<{ questions: InterviewQuestion[] }>(raw);
+    if (!parsed?.questions || !Array.isArray(parsed.questions)) {
+      return jsonResponse({ error: "LLM returned malformed payload" }, 502);
+    }
+
+    return jsonResponse({ questions: parsed.questions, remaining: usage.remaining });
   } catch (e) {
-    console.error(e);
-    return json({ error: e instanceof Error ? e.message : "Unknown error" }, 500);
+    console.error("interview-questions error:", e);
+    return jsonResponse({ error: (e as Error).message ?? "Internal error" }, 500);
   }
 });
