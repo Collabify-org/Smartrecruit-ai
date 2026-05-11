@@ -1,51 +1,74 @@
-import { admin, authUser, callGemini, checkAndIncrement, corsHeaders, json } from "../_shared/usage.ts";
+// supabase/functions/generate-jd/index.ts
+import {
+  authUser,
+  callLLM,
+  checkAndIncrement,
+  corsHeaders,
+  jsonResponse,
+} from "../_shared/usage.ts";
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
   try {
-    const user = await authUser(req);
-    if (!user) return json({ error: "Unauthorized" }, 401);
+    const { user, error: authErr } = await authUser(req);
+    if (!user) return jsonResponse({ error: authErr ?? "Unauthorized" }, 401);
 
-    const { role, experience, skills, company, workMode, mode, template } = await req.json();
-    if (!role || !company) return json({ error: "Role and company required" }, 400);
+    let payload: {
+      title?: string;
+      company?: string;
+      seniority?: string;
+      skills?: string[];
+      location?: string;
+      employmentType?: string;
+      notes?: string;
+    } = {};
+    try {
+      payload = await req.json();
+    } catch {
+      return jsonResponse({ error: "Invalid JSON body" }, 400);
+    }
 
-    const gate = await checkAndIncrement(user.id, "usage_jd");
-    if (!gate.ok) return json({ error: gate.message }, gate.status);
+    if (!payload.title || typeof payload.title !== "string") {
+      return jsonResponse({ error: "Field 'title' is required" }, 400);
+    }
 
-    const prompt = mode === "template" && template
-      ? `You are an expert recruiter. Using the company template below, produce a complete, polished job description for a ${role} at ${company}. Replace all placeholders ({role}, {company}, {experience}, {skills}, {workMode}) with the provided values. Keep the original tone and structure of the template.
+    const usage = await checkAndIncrement(user.id, "usage_jd");
+    if (!usage.ok) {
+      return jsonResponse({ error: usage.error ?? "Usage limit reached" }, 403);
+    }
 
-Template:
-${template}
+    const system =
+      "You are an expert technical recruiter. Write a clear, structured, inclusive Job Description in Markdown. " +
+      "Include: Role Summary, Responsibilities, Required Qualifications, Nice-to-haves, Compensation & Benefits, About the Company. " +
+      "Avoid biased language. Keep it concise and scannable.";
 
-Values:
-- Role: ${role}
-- Experience: ${experience || "Not specified"}
-- Skills: ${skills || "Not specified"}
-- Company: ${company}
-- Work mode: ${workMode || "Remote"}`
-      : `You are an expert recruiter. Write a complete, professional job description in clean Markdown for the following role. Use these sections in order: About the role, Key responsibilities, Required qualifications, Preferred qualifications, What we offer, How to apply.
+    const userPrompt = `Create a Job Description for:
+Title: ${payload.title}
+Company: ${payload.company ?? "N/A"}
+Seniority: ${payload.seniority ?? "N/A"}
+Location: ${payload.location ?? "Remote"}
+Employment Type: ${payload.employmentType ?? "Full-time"}
+Skills: ${(payload.skills ?? []).join(", ") || "N/A"}
+Additional notes: ${payload.notes ?? "None"}`;
 
-- Role: ${role}
-- Company: ${company}
-- Experience: ${experience || "Not specified"}
-- Skills: ${skills || "Not specified"}
-- Work mode: ${workMode || "Remote"}
-
-Be specific, role-tailored, and ATS-friendly.`;
-
-    const content = await callGemini(prompt);
-
-    await admin().from("jd_history").insert({
-      user_id: user.id,
-      role_name: role,
-      mode: mode || "smartrecruit",
-      content,
+    const jd = await callLLM({
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.5,
+      maxTokens: 1800,
     });
 
-    return json({ content });
+    return jsonResponse({ jd, remaining: usage.remaining });
   } catch (e) {
-    console.error(e);
-    return json({ error: e instanceof Error ? e.message : "Unknown error" }, 500);
+    console.error("generate-jd error:", e);
+    return jsonResponse({ error: (e as Error).message ?? "Internal error" }, 500);
   }
 });
