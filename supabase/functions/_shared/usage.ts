@@ -1,249 +1,242 @@
-Confirmations (read these first)
-Other files changed? No. Only one file changes in your repo: supabase/functions/_shared/usage.ts. The 3 edge function files (generate-jd/index.ts, talent-intel/index.ts, interview-questions/index.ts) are untouched.
+/ supabase/functions/_shared/usage.ts
+// Shared utilities for SmartRecruit AI Edge Functions
 
-New folders/files to create? No. The file already exists in your repo — you are replacing its contents in place. No new directories, no new files.
+import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-Existing imports in the 3 edge functions remain untouched? Yes, fully untouched. They keep doing import { admin, authUser, callGemini, checkAndIncrement, corsHeaders, json } from "../_shared/usage.ts";. I kept callGemini exported as an alias of the new callLLM, so the import surface is 100% backward compatible.
-
-Is the pasted file production-ready for direct GitHub web commit? Yes. It's the exact content currently running and tested green in my sandbox (10/10 backend tests passed). Safe to paste and "Commit to main".
-
-Where to paste it on GitHub (90-second walkthrough)
-Open https://github.com/Collabify-org/Smartrecruit-ai/blob/main/supabase/functions/_shared/usage.ts
-Click the pencil icon (top-right of the file view) labelled "Edit this file"
-Press Cmd/Ctrl + A to select all existing content → Delete
-Paste the full content below
-Scroll down → commit message: fix: smart multi-provider LLM fallback (replaces deprecated gemini-1.5-flash)
-Choose "Commit directly to the main branch" → click Commit changes
-FULL FILE CONTENT — paste this exactly
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-
-export const corsHeaders = {
+// ---------- CORS ----------
+export const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 
-export const CONTACT_EMAIL = "team@collabifyspace.com";
-
-export const PLAN_LIMITS: Record<string, number> = {
-  trial: 10,
-  starter: 10,
-  professional: 50,
-  agency: Infinity,
-};
-
-export function admin() {
-  return createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-  );
+// ---------- Supabase admin client ----------
+export function admin(): SupabaseClient {
+  const url = Deno.env.get("SUPABASE_URL")!;
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  return createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }
 
+// ---------- Auth helper ----------
 export async function authUser(req: Request) {
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) return null;
-  const token = authHeader.replace("Bearer ", "");
-  const sb = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_ANON_KEY")!,
-  );
-  const { data, error } = await sb.auth.getUser(token);
-  if (error || !data.user) return null;
-  return data.user;
+  const authHeader = req.headers.get("Authorization") ?? "";
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+  if (!token) {
+    return { user: null, error: "Missing Authorization bearer token" };
+  }
+
+  const url = Deno.env.get("SUPABASE_URL")!;
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+  const client = createClient(url, anonKey, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  const { data, error } = await client.auth.getUser(token);
+  if (error || !data?.user) {
+    return { user: null, error: error?.message ?? "Invalid auth token" };
+  }
+  return { user: data.user, error: null };
 }
 
-type UsageField = "usage_jd" | "usage_talent" | "usage_interview";
+// ---------- Usage tracking ----------
+type UsageColumn = "usage_jd" | "usage_interview" | "usage_talent";
 
-export async function checkAndIncrement(userId: string, field: UsageField) {
-  const sb = admin();
-  const { data: profile, error } = await sb
+const PLAN_LIMITS: Record<string, Record<UsageColumn, number>> = {
+  free: { usage_jd: 5, usage_interview: 5, usage_talent: 3 },
+  pro: { usage_jd: 200, usage_interview: 200, usage_talent: 100 },
+  enterprise: {
+    usage_jd: Number.MAX_SAFE_INTEGER,
+    usage_interview: Number.MAX_SAFE_INTEGER,
+    usage_talent: Number.MAX_SAFE_INTEGER,
+  },
+};
+
+export async function checkAndIncrement(
+  userId: string,
+  column: UsageColumn,
+): Promise<{ ok: boolean; remaining: number; error?: string }> {
+  const db = admin();
+
+  const { data: profile, error: profileErr } = await db
     .from("profiles")
-    .select("plan, trial_expires_at, usage_jd, usage_talent, usage_interview")
+    .select(`plan, ${column}`)
     .eq("id", userId)
     .maybeSingle();
-  if (error || !profile) {
-    return { ok: false as const, status: 404, message: "Profile not found" };
-  }
-  const plan = (profile.plan || "trial").toLowerCase();
 
-  if (plan === "trial" && profile.trial_expires_at && new Date(profile.trial_expires_at) < new Date()) {
-    return {
-      ok: false as const,
-      status: 402,
-      message: `Your 3-day trial has ended. Please contact us to continue: ${CONTACT_EMAIL}`,
-    };
+  if (profileErr) {
+    return { ok: false, remaining: 0, error: profileErr.message };
   }
 
-  const limit = PLAN_LIMITS[plan] ?? 10;
-  const current = (profile as any)[field] ?? 0;
+  const plan = (profile?.plan ?? "free") as keyof typeof PLAN_LIMITS;
+  const limit = PLAN_LIMITS[plan]?.[column] ?? PLAN_LIMITS.free[column];
+  const current = Number((profile as Record<string, unknown> | null)?.[column] ?? 0);
+
   if (current >= limit) {
-    return {
-      ok: false as const,
-      status: 402,
-      message: `You have reached your plan limit. Please contact us to upgrade: ${CONTACT_EMAIL}`,
-    };
+    return { ok: false, remaining: 0, error: "Usage limit reached for your plan" };
   }
 
-  const { error: upErr } = await sb
+  const next = current + 1;
+  const { error: updErr } = await db
     .from("profiles")
-    .update({ [field]: current + 1 })
+    .update({ [column]: next })
     .eq("id", userId);
-  if (upErr) return { ok: false as const, status: 500, message: upErr.message };
 
-  return { ok: true as const };
+  if (updErr) {
+    return { ok: false, remaining: limit - current, error: updErr.message };
+  }
+
+  return { ok: true, remaining: Math.max(limit - next, 0) };
 }
 
-// ---------------------------------------------------------------------------
-// Smart multi-provider LLM caller with automatic fallback.
-//
-// Provider chain (in order):
-//   1. Emergent LLM proxy  -> rotates OpenAI -> Gemini -> Claude internally
-//   2. Direct Gemini API   -> gemini-2.5-flash (free tier)
-//   3. Groq API            -> llama-3.3-70b-versatile (free tier)
-//   4. OpenAI API          -> gpt-4o-mini (if OPENAI_API_KEY set)
-//
-// Required Supabase secrets (set at least ONE of these to keep app alive):
-//   LLM_PROXY_URL      e.g. https://your-emergent-app.preview.emergentagent.com
-//   LLM_PROXY_SECRET   bearer token shared with the Emergent backend
-//   GEMINI_API_KEY     (optional fallback)
-//   GROQ_API_KEY       (optional fallback)
-//   OPENAI_API_KEY     (optional fallback)
-// ---------------------------------------------------------------------------
+// ---------- LLM call chain ----------
+export interface LLMMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
 
-type ProviderAttempt = { provider: string; ok: boolean; error?: string };
+export interface CallLLMOptions {
+  messages: LLMMessage[];
+  temperature?: number;
+  maxTokens?: number;
+  jsonMode?: boolean;
+}
 
-async function tryEmergentProxy(prompt: string): Promise<string> {
+function buildPrompt(messages: LLMMessage[]): string {
+  return messages.map((m) => `${m.role.toUpperCase()}: ${m.content}`).join("\n\n");
+}
+
+async function callEmergent(opts: CallLLMOptions): Promise<string> {
   const url = Deno.env.get("LLM_PROXY_URL");
   const secret = Deno.env.get("LLM_PROXY_SECRET");
-  if (!url || !secret) throw new Error("Emergent proxy not configured");
+  if (!url || !secret) throw new Error("emergent_proxy_disabled");
 
-  const endpoint = `${url.replace(/\/$/, "")}/api/llm/complete`;
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${secret}`,
-    },
-    body: JSON.stringify({ prompt }),
-  });
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`Emergent proxy ${res.status}: ${t.slice(0, 200)}`);
-  }
-  const data = await res.json();
-  const content = data?.content;
-  if (!content) throw new Error("Empty proxy response");
-  return content;
-}
-
-async function tryGeminiDirect(prompt: string): Promise<string> {
-  const key = Deno.env.get("GEMINI_API_KEY");
-  if (!key) throw new Error("GEMINI_API_KEY not set");
-  const url =
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "content-type": "application/json", authorization: `Bearer ${secret}` },
     body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      messages: opts.messages,
+      temperature: opts.temperature ?? 0.4,
+      max_tokens: opts.maxTokens ?? 1500,
+      json: !!opts.jsonMode,
     }),
   });
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`Gemini ${res.status}: ${t.slice(0, 200)}`);
-  }
+  if (!res.ok) throw new Error(`emergent_proxy_${res.status}`);
   const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts
-    ?.map((p: any) => p.text)
-    .join("") ?? "";
-  if (!text) throw new Error("Empty Gemini response");
+  const text = data?.text ?? data?.content ?? data?.choices?.[0]?.message?.content ?? "";
+  if (!text) throw new Error("emergent_proxy_empty");
   return text;
 }
 
-async function tryGroq(prompt: string): Promise<string> {
+async function callGemini(opts: CallLLMOptions): Promise<string> {
+  const key = Deno.env.get("GEMINI_API_KEY");
+  if (!key) throw new Error("gemini_disabled");
+
+  const body: Record<string, unknown> = {
+    contents: [{ role: "user", parts: [{ text: buildPrompt(opts.messages) }] }],
+    generationConfig: {
+      temperature: opts.temperature ?? 0.4,
+      maxOutputTokens: opts.maxTokens ?? 1500,
+      ...(opts.jsonMode ? { responseMimeType: "application/json" } : {}),
+    },
+  };
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
+    { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) },
+  );
+  if (!res.ok) throw new Error(`gemini_${res.status}`);
+  const data = await res.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  if (!text) throw new Error("gemini_empty");
+  return text;
+}
+
+async function callGroq(opts: CallLLMOptions): Promise<string> {
   const key = Deno.env.get("GROQ_API_KEY");
-  if (!key) throw new Error("GROQ_API_KEY not set");
+  if (!key) throw new Error("groq_disabled");
+
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`,
-    },
+    headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
     body: JSON.stringify({
       model: "llama-3.3-70b-versatile",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-      max_tokens: 4096,
+      messages: opts.messages,
+      temperature: opts.temperature ?? 0.4,
+      max_tokens: opts.maxTokens ?? 1500,
+      ...(opts.jsonMode ? { response_format: { type: "json_object" } } : {}),
     }),
   });
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`Groq ${res.status}: ${t.slice(0, 200)}`);
-  }
+  if (!res.ok) throw new Error(`groq_${res.status}`);
   const data = await res.json();
   const text = data?.choices?.[0]?.message?.content ?? "";
-  if (!text) throw new Error("Empty Groq response");
+  if (!text) throw new Error("groq_empty");
   return text;
 }
 
-async function tryOpenAI(prompt: string): Promise<string> {
+async function callOpenAI(opts: CallLLMOptions): Promise<string> {
   const key = Deno.env.get("OPENAI_API_KEY");
-  if (!key) throw new Error("OPENAI_API_KEY not set");
+  if (!key) throw new Error("openai_disabled");
+
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`,
-    },
+    headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
     body: JSON.stringify({
       model: "gpt-4o-mini",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
+      messages: opts.messages,
+      temperature: opts.temperature ?? 0.4,
+      max_tokens: opts.maxTokens ?? 1500,
+      ...(opts.jsonMode ? { response_format: { type: "json_object" } } : {}),
     }),
   });
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`OpenAI ${res.status}: ${t.slice(0, 200)}`);
-  }
+  if (!res.ok) throw new Error(`openai_${res.status}`);
   const data = await res.json();
   const text = data?.choices?.[0]?.message?.content ?? "";
-  if (!text) throw new Error("Empty OpenAI response");
+  if (!text) throw new Error("openai_empty");
   return text;
 }
 
-export async function callLLM(prompt: string): Promise<string> {
-  const chain: Array<[string, (p: string) => Promise<string>]> = [
-    ["EmergentProxy", tryEmergentProxy],
-    ["Gemini-2.5-Flash", tryGeminiDirect],
-    ["Groq-Llama-3.3", tryGroq],
-    ["OpenAI-GPT-4o-mini", tryOpenAI],
+export async function callLLM(opts: CallLLMOptions): Promise<string> {
+  const errors: string[] = [];
+  const chain = [
+    { name: "emergent", fn: callEmergent },
+    { name: "gemini", fn: callGemini },
+    { name: "groq", fn: callGroq },
+    { name: "openai", fn: callOpenAI },
   ];
 
-  const attempts: ProviderAttempt[] = [];
-  for (const [name, fn] of chain) {
+  for (const provider of chain) {
     try {
-      const content = await fn(prompt);
-      console.log(`[LLM] ${name} succeeded`);
-      return content;
+      const out = await provider.fn(opts);
+      if (out && out.trim()) return out.trim();
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      console.warn(`[LLM] ${name} failed: ${msg}`);
-      attempts.push({ provider: name, ok: false, error: msg });
-      continue;
+      errors.push(`${provider.name}: ${(e as Error).message}`);
     }
   }
-
-  throw new Error(
-    `All LLM providers failed. Attempts: ${JSON.stringify(attempts)}`,
-  );
+  throw new Error(`All LLM providers failed -> ${errors.join(" | ")}`);
 }
 
-// Back-compat alias so older imports keep working
-export const callGemini = callLLM;
-
-export function json(body: unknown, status = 200) {
+// ---------- JSON helpers ----------
+export function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...corsHeaders, "content-type": "application/json" },
   });
+}
+
+export function extractJSON<T = unknown>(raw: string): T {
+  const trimmed = raw.trim().replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
+  try {
+    return JSON.parse(trimmed) as T;
+  } catch {
+    const start = trimmed.indexOf("{");
+    const end = trimmed.lastIndexOf("}");
+    if (start !== -1 && end !== -1 && end > start) {
+      return JSON.parse(trimmed.slice(start, end + 1)) as T;
+    }
+    throw new Error("LLM did not return valid JSON");
+  }
 }
