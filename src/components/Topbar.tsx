@@ -55,21 +55,21 @@ export default function Topbar() {
 
         {/* FULL LOGO */}
         <img
-          src="/synlumex-logo.png"
+          src="/synlumex-logo.png.png"
           alt="Synlumex"
           onClick={() => navigate("/")}
           className={`cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 ${
-            scrolled ? "opacity-0 scale-90 w-0" : "opacity-100 h-10"
+            scrolled ? "opacity-0 scale-90 w-0" : "opacity-100 h-14"
           }`}
         />
 
         {/* ICON LOGO */}
         <img
-          src="/synlumex-icon.png"
+          src="/synlumex-logo.png.png"
           alt="Synlumex"
           onClick={() => navigate("/")}
           className={`absolute left-0 cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 ${
-            scrolled ? "opacity-100 h-8" : "opacity-0 scale-90 w-0"
+            scrolled ? "opacity-100 h-14" : "opacity-0 scale-90 w-0"
           } drop-shadow-[0_0_14px_rgba(99,102,241,0.35)]`}
         />
 
