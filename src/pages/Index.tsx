@@ -47,10 +47,7 @@ export default function Index() {
     alt="Synlumex"
     className="h-10 w-auto object-contain"
   />
-
-  <span className="text-xl font-bold tracking-tight">
-    Synlumex
-  </span>
+            
 </Link>
           <nav className="hidden lg:flex items-center gap-7" aria-label="Primary">
             {NAV.map((n) => (
