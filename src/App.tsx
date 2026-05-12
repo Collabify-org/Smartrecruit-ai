@@ -12,6 +12,7 @@ import InterviewQuestions from "./pages/InterviewQuestions";
 import Billing from "./pages/Billing";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
+import History from "./pages/History";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Navigate } from "react-router-dom";
 
@@ -35,14 +36,13 @@ const App = () => (
               <Route path="/app/interview-questions" element={<InterviewQuestions />} />
               <Route path="/app/billing" element={<Billing />} />
               <Route path="/app/settings" element={<Settings />} />
+              <Route path="/app/history" element={<History />} />
             </Route>
           </Route>
-          {/* Legacy redirects */}
           <Route path="/jd-generator" element={<Navigate to="/app/jd-generator" replace />} />
           <Route path="/talent-intelligence" element={<Navigate to="/app/talent-intelligence" replace />} />
           <Route path="/billing" element={<Navigate to="/app/billing" replace />} />
           <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
