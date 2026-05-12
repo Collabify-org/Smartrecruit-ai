@@ -14,7 +14,7 @@ export const corsHeaders: Record<string, string> = {
 // ---------- Supabase admin client ----------
 export function admin(): SupabaseClient {
   const url = Deno.env.get("SUPABASE_URL")!;
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const serviceKey = Deno.env.get("SERVICE_ROLE_KEY")!;
   return createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -29,7 +29,7 @@ export async function authUser(req: Request) {
   }
 
   const url = Deno.env.get("SUPABASE_URL")!;
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+  const anonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
   const client = createClient(url, anonKey, {
     global: { headers: { Authorization: `Bearer ${token}` } },
     auth: { persistSession: false, autoRefreshToken: false },
