@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Sparkles, Linkedin } from "lucide-react";
+import { Linkedin } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -7,10 +7,11 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-5 gap-8">
         <div className="col-span-2 md:col-span-1">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-brand flex items-center justify-center shadow-glow">
-              <Sparkles className="h-4 w-4 text-brand-foreground" />
-            </div>
-            <span className="font-semibold tracking-tight">Synlumex</span>
+            <img
+              src="/synlumex-logo.png.png"
+              alt="Synlumex"
+              className="h-16 w-auto object-contain"
+            />
           </div>
           <p className="text-sm text-muted-foreground mt-3 max-w-xs">
             The AI hiring operating system for modern startups and recruiters.
