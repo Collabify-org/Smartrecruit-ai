@@ -202,10 +202,10 @@ async function callOpenAI(opts: CallLLMOptions): Promise<string> {
 export async function callLLM(opts: CallLLMOptions): Promise<string> {
   const errors: string[] = [];
   const chain = [
-    { name: "emergent", fn: callEmergent },
-    { name: "gemini", fn: callGemini },
-    { name: "groq", fn: callGroq },
-    { name: "openai", fn: callOpenAI },
+    { name: "groq", fn: callGroq },        // ← Fastest, goes first
+    { name: "gemini", fn: callGemini },     // ← Fallback
+    { name: "emergent", fn: callEmergent }, // ← Fallback
+    { name: "openai", fn: callOpenAI },     // ← Last resort
   ];
 
   for (const provider of chain) {
