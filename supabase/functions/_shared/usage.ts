@@ -29,7 +29,7 @@ export async function authUser(req: Request) {
   }
 
   const url = Deno.env.get("SUPABASE_URL")!;
-  const anonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
+  const anonKey = Deno.env.get("PUBLISHABLE_KEY")!;
   const client = createClient(url, anonKey, {
     global: { headers: { Authorization: `Bearer ${token}` } },
     auth: { persistSession: false, autoRefreshToken: false },
