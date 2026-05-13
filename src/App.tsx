@@ -15,9 +15,10 @@ import Login from "./pages/Login";
 import History from "./pages/History";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Navigate } from "react-router-dom";
+import AdminLogin from "./pages/admin/Login";
+import AdminDashboard from "./pages/admin/Dashboard";
 
 const queryClient = new QueryClient();
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -43,11 +44,12 @@ const App = () => (
           <Route path="/talent-intelligence" element={<Navigate to="/app/talent-intelligence" replace />} />
           <Route path="/billing" element={<Navigate to="/app/billing" replace />} />
           <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
-
 export default App;
