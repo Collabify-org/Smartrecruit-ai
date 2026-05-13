@@ -9,7 +9,7 @@ const supabase = createClient(
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
