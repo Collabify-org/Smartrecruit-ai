@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, HeadingLevel, TextRun } from "docx";
+import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, ShadingType, BorderStyle, AlignmentType, VerticalAlign } from "docx";
 import { saveAs } from "file-saver";
 
 export async function exportMarkdownToDocx(markdown: string, filename: string) {
@@ -53,8 +53,6 @@ function parseInline(text: string): TextRun[] {
   return runs.length ? runs : [new TextRun(text)];
 }
 
-import { Table, TableRow, TableCell, WidthType, ShadingType, BorderStyle, AlignmentType, VerticalAlign } from "docx";
-
 export async function exportTalentReportToDocx(report: any, filename: string) {
   const NAVY = "0D2B55";
   const LIGHT_BLUE = "E8F0FA";
@@ -99,7 +97,7 @@ export async function exportTalentReportToDocx(report: any, filename: string) {
 
     navyHeader("🔍 1. TOP SEARCH KEYWORDS"),
     ...(report.keywords?.boolean_strings?.map((s: string, i: number) =>
-      new Paragraph({ children: [new TextRun({ text: `${i+1}. ${s}`, size: 18, font: "Arial" })], spacing: { after: 40 } })
+      new Paragraph({ children: [new TextRun({ text: `${i + 1}. ${s}`, size: 18, font: "Arial" })], spacing: { after: 40 } })
     ) || []),
     new Paragraph({ children: [new TextRun({ text: `Skill Keywords: ${report.keywords?.skill_keywords?.join(", ")}`, bold: true, size: 18, font: "Arial", color: NAVY })], spacing: { before: 100, after: 200 } }),
 
@@ -153,6 +151,100 @@ export async function exportTalentReportToDocx(report: any, filename: string) {
     ),
     new Paragraph({ children: [], spacing: { after: 200 } }),
   ];
+
+  const doc = new Document({
+    styles: {
+      default: { document: { run: { font: "Arial", size: 20 } } },
+    },
+    numbering: {
+      config: [{
+        reference: "bullets",
+        levels: [{ level: 0, format: "bullet" as any, text: "•", alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 720, hanging: 360 } } } }]
+      }]
+    },
+    sections: [{
+      properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1200, right: 1200, bottom: 1200, left: 1200 } } },
+      children,
+    }],
+  });
+
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, filename.endsWith(".docx") ? filename : `${filename}.docx`);
+}
+
+export async function exportInterviewToDocx(questions: Record<string, any[]>, filename: string) {
+  const NAVY = "0D2B55";
+  const LIGHT_BLUE = "E8F0FA";
+  const WHITE = "FFFFFF";
+
+  const children: any[] = [
+    new Paragraph({
+      children: [new TextRun({ text: "INTERVIEW QUESTION SET", bold: true, size: 32, color: NAVY, font: "Arial" })],
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 400 },
+    }),
+  ];
+
+  for (const [category, qs] of Object.entries(questions)) {
+    children.push(
+      new Paragraph({
+        children: [new TextRun({ text: category.replace(/_/g, " ").toUpperCase(), bold: true, color: WHITE, size: 24, font: "Arial" })],
+        shading: { fill: NAVY, type: ShadingType.CLEAR },
+        spacing: { before: 300, after: 100 },
+        indent: { left: 100, right: 100 },
+      })
+    );
+
+    if (!Array.isArray(qs)) continue;
+
+    qs.forEach((q: any, i: number) => {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: `Q${i + 1}: `, bold: true, color: NAVY, size: 20, font: "Arial" }),
+            new TextRun({ text: q.question || "", size: 20, font: "Arial" }),
+          ],
+          shading: { fill: i % 2 === 0 ? WHITE : LIGHT_BLUE, type: ShadingType.CLEAR },
+          spacing: { before: 120, after: 60 },
+          indent: { left: 100 },
+        })
+      );
+
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: "Difficulty: ", bold: true, size: 18, font: "Arial", color: "666666" }),
+            new TextRun({ text: q.difficulty || "", size: 18, font: "Arial" }),
+            new TextRun({ text: "   Type: ", bold: true, size: 18, font: "Arial", color: "666666" }),
+            new TextRun({ text: q.category || "", size: 18, font: "Arial" }),
+          ],
+          indent: { left: 100 },
+          spacing: { after: 60 },
+        })
+      );
+
+      if (Array.isArray(q.ideal_answer_points) && q.ideal_answer_points.length > 0) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: "Key Answer Points:", bold: true, size: 18, font: "Arial", color: NAVY })],
+            indent: { left: 100 },
+            spacing: { after: 40 },
+          })
+        );
+        q.ideal_answer_points.forEach((pt: string) => {
+          children.push(
+            new Paragraph({
+              bullet: { level: 0 },
+              children: [new TextRun({ text: pt, size: 18, font: "Arial" })],
+              spacing: { after: 40 },
+            })
+          );
+        });
+      }
+
+      children.push(new Paragraph({ children: [new TextRun("")], spacing: { after: 80 } }));
+    });
+  }
 
   const doc = new Document({
     styles: {
