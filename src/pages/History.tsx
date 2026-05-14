@@ -42,6 +42,67 @@ function timeAgo(date: string) {
   return "Just now";
 }
 
+function parseQuestions(raw: string) {
+  try {
+    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    const categories = Object.entries(parsed);
+    return categories as [string, any[]][];
+  } catch {
+    return null;
+  }
+}
+
+function downloadTxt(content: string, filename: string) {
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function questionsToText(raw: string): string {
+  const categories = parseQuestions(raw);
+  if (!categories) return raw;
+  let text = "";
+  for (const [cat, questions] of categories) {
+    text += `\n== ${cat.toUpperCase()} ==\n\n`;
+    if (Array.isArray(questions)) {
+      questions.forEach((q: any, i: number) => {
+        text += `Q${i + 1}: ${q.question}\n`;
+        text += `Difficulty: ${q.difficulty} | Category: ${q.category}\n`;
+        if (q.ideal_answer_points?.length) {
+          text += `Key Points:\n`;
+          q.ideal_answer_points.forEach((p: string) => { text += `  • ${p}\n`; });
+        }
+        text += "\n";
+      });
+    }
+  }
+  return text;
+}
+
+function talentToText(raw: string): string {
+  try {
+    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    let text = "";
+    for (const [key, value] of Object.entries(parsed)) {
+      text += `\n== ${key.replace(/_/g, " ").toUpperCase()} ==\n`;
+      if (Array.isArray(value)) {
+        value.forEach((v: any) => { text += `  • ${typeof v === "object" ? JSON.stringify(v) : v}\n`; });
+      } else if (typeof value === "object") {
+        text += JSON.stringify(value, null, 2) + "\n";
+      } else {
+        text += `${value}\n`;
+      }
+    }
+    return text;
+  } catch {
+    return raw;
+  }
+}
+
 export default function History() {
   const [jds, setJds] = useState<JDRecord[]>([]);
   const [interviews, setInterviews] = useState<InterviewRecord[]>([]);
@@ -49,21 +110,17 @@ export default function History() {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchAll();
-  }, []);
+  useEffect(() => { fetchAll(); }, []);
 
   async function fetchAll() {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setLoading(false); return; }
-
     const [jdRes, intRes, talRes] = await Promise.all([
       supabase.from("jd_history").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
       supabase.from("interview_history").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
       supabase.from("talent_history").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
     ]);
-
     setJds((jdRes.data as JDRecord[]) ?? []);
     setInterviews((intRes.data as InterviewRecord[]) ?? []);
     setTalents((talRes.data as TalentRecord[]) ?? []);
@@ -84,7 +141,6 @@ export default function History() {
   return (
     <>
       <PageHeader title="History" description="All your generated JDs, interview question sets, and talent analyses." />
-
       <Tabs defaultValue="jds">
         <TabsList className="bg-secondary mb-6">
           <TabsTrigger value="jds" className="gap-2">
@@ -103,9 +159,7 @@ export default function History() {
 
         {/* JDs Tab */}
         <TabsContent value="jds">
-          {jds.length === 0 ? (
-            <Empty icon={FileText} text="No JDs generated yet" />
-          ) : (
+          {jds.length === 0 ? <Empty icon={FileText} text="No JDs generated yet" /> : (
             <div className="space-y-3">
               {jds.map((jd) => (
                 <Card key={jd.id} className="p-5 shadow-soft-sm">
@@ -141,64 +195,129 @@ export default function History() {
 
         {/* Interview Questions Tab */}
         <TabsContent value="interviews">
-          {interviews.length === 0 ? (
-            <Empty icon={Phone} text="No interview question sets generated yet" />
-          ) : (
+          {interviews.length === 0 ? <Empty icon={Phone} text="No interview question sets generated yet" /> : (
             <div className="space-y-3">
-              {interviews.map((rec) => (
-                <Card key={rec.id} className="p-5 shadow-soft-sm">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm truncate">
-                        {rec.jd_input?.slice(0, 80)}...
+              {interviews.map((rec) => {
+                const categories = parseQuestions(rec.questions);
+                const isExpanded = expandedId === rec.id;
+                return (
+                  <Card key={rec.id} className="p-5 shadow-soft-sm">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-sm truncate">{rec.jd_input?.slice(0, 80)}...</div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                          <Clock className="h-3 w-3" /> {timeAgo(rec.created_at)}
+                        </div>
+                        {isExpanded && categories && (
+                          <div className="mt-4 space-y-4">
+                            {categories.map(([cat, questions]) => (
+                              <div key={cat}>
+                                <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2 capitalize">
+                                  {cat.replace(/_/g, " ")}
+                                </h4>
+                                <div className="space-y-3">
+                                  {Array.isArray(questions) && questions.map((q: any, i: number) => (
+                                    <div key={i} className="bg-secondary rounded-lg p-3">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-xs font-bold text-primary">Q{i + 1}</span>
+                                        <Badge variant="outline" className="text-xs">{q.difficulty}</Badge>
+                                        <Badge variant="secondary" className="text-xs">{q.category}</Badge>
+                                      </div>
+                                      <p className="text-sm font-medium mb-2">{q.question}</p>
+                                      {q.ideal_answer_points?.length > 0 && (
+                                        <div>
+                                          <p className="text-xs text-muted-foreground font-medium mb-1">Key Answer Points:</p>
+                                          <ul className="space-y-0.5">
+                                            {q.ideal_answer_points.map((pt: string, j: number) => (
+                                              <li key={j} className="text-xs text-muted-foreground flex gap-1.5">
+                                                <span className="text-primary mt-0.5">•</span> {pt}
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                        <Clock className="h-3 w-3" /> {timeAgo(rec.created_at)}
+                      <div className="flex gap-2 shrink-0">
+                        <Button variant="outline" size="sm" onClick={() => setExpandedId(isExpanded ? null : rec.id)}>
+                          {isExpanded ? "Hide" : "View"}
+                        </Button>
+                        <Button size="sm" onClick={() => {
+                          downloadTxt(questionsToText(rec.questions), `interview-questions-${rec.id.slice(0, 8)}.txt`);
+                          toast.success("Downloaded!");
+                        }}>
+                          <Download className="h-4 w-4 mr-1.5" /> .txt
+                        </Button>
                       </div>
-                      {expandedId === rec.id && (
-                        <pre className="mt-4 text-xs bg-secondary rounded-lg p-4 whitespace-pre-wrap font-mono max-h-64 overflow-y-auto">
-                          {typeof rec.questions === "string" ? rec.questions : JSON.stringify(rec.questions, null, 2)}
-                        </pre>
-                      )}
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => setExpandedId(expandedId === rec.id ? null : rec.id)}>
-                      {expandedId === rec.id ? "Hide" : "View"}
-                    </Button>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                );
+              })}
             </div>
           )}
         </TabsContent>
 
         {/* Talent Intel Tab */}
         <TabsContent value="talent">
-          {talents.length === 0 ? (
-            <Empty icon={Brain} text="No talent analyses generated yet" />
-          ) : (
+          {talents.length === 0 ? <Empty icon={Brain} text="No talent analyses generated yet" /> : (
             <div className="space-y-3">
-              {talents.map((rec) => (
-                <Card key={rec.id} className="p-5 shadow-soft-sm">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm truncate">
-                        {rec.jd_input?.slice(0, 80)}...
+              {talents.map((rec) => {
+                const isExpanded = expandedId === rec.id;
+                let parsed: any = null;
+                try { parsed = typeof rec.result === "string" ? JSON.parse(rec.result) : rec.result; } catch {}
+                return (
+                  <Card key={rec.id} className="p-5 shadow-soft-sm">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-sm truncate">{rec.jd_input?.slice(0, 80)}...</div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                          <Clock className="h-3 w-3" /> {timeAgo(rec.created_at)}
+                        </div>
+                        {isExpanded && parsed && (
+                          <div className="mt-4 space-y-4">
+                            {Object.entries(parsed).map(([key, value]) => (
+                              <div key={key} className="bg-secondary rounded-lg p-3">
+                                <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                                  {key.replace(/_/g, " ")}
+                                </h4>
+                                {Array.isArray(value) ? (
+                                  <ul className="space-y-0.5">
+                                    {value.map((v: any, i: number) => (
+                                      <li key={i} className="text-xs flex gap-1.5">
+                                        <span className="text-primary">•</span>
+                                        {typeof v === "object" ? JSON.stringify(v) : v}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <p className="text-sm">{typeof value === "object" ? JSON.stringify(value) : String(value)}</p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                        <Clock className="h-3 w-3" /> {timeAgo(rec.created_at)}
+                      <div className="flex gap-2 shrink-0">
+                        <Button variant="outline" size="sm" onClick={() => setExpandedId(isExpanded ? null : rec.id)}>
+                          {isExpanded ? "Hide" : "View"}
+                        </Button>
+                        <Button size="sm" onClick={() => {
+                          downloadTxt(talentToText(rec.result), `talent-analysis-${rec.id.slice(0, 8)}.txt`);
+                          toast.success("Downloaded!");
+                        }}>
+                          <Download className="h-4 w-4 mr-1.5" /> .txt
+                        </Button>
                       </div>
-                      {expandedId === rec.id && (
-                        <pre className="mt-4 text-xs bg-secondary rounded-lg p-4 whitespace-pre-wrap font-mono max-h-64 overflow-y-auto">
-                          {typeof rec.result === "string" ? rec.result : JSON.stringify(rec.result, null, 2)}
-                        </pre>
-                      )}
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => setExpandedId(expandedId === rec.id ? null : rec.id)}>
-                      {expandedId === rec.id ? "Hide" : "View"}
-                    </Button>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                );
+              })}
             </div>
           )}
         </TabsContent>
