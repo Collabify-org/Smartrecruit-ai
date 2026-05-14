@@ -1,6 +1,3 @@
-/ supabase/functions/_shared/usage.ts
-// Shared utilities for SmartRecruit AI Edge Functions
-
 import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 // ---------- CORS ----------
@@ -8,7 +5,7 @@ export const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, GET, OPTIONS", 
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 
 // ---------- Supabase admin client ----------
@@ -46,13 +43,10 @@ export async function authUser(req: Request) {
 type UsageColumn = "usage_jd" | "usage_interview" | "usage_talent";
 
 const PLAN_LIMITS: Record<string, Record<UsageColumn, number>> = {
-  free: { usage_jd: 5, usage_interview: 5, usage_talent: 3 },
-  pro: { usage_jd: 200, usage_interview: 200, usage_talent: 100 },
-  enterprise: {
-    usage_jd: Number.MAX_SAFE_INTEGER,
-    usage_interview: Number.MAX_SAFE_INTEGER,
-    usage_talent: Number.MAX_SAFE_INTEGER,
-  },
+  free:         { usage_jd: 3,                       usage_interview: 3,                       usage_talent: 3 },
+  starter:      { usage_jd: 10,                      usage_interview: 10,                      usage_talent: 10 },
+  professional: { usage_jd: 50,                      usage_interview: 50,                      usage_talent: 50 },
+  enterprise:   { usage_jd: Number.MAX_SAFE_INTEGER, usage_interview: Number.MAX_SAFE_INTEGER, usage_talent: Number.MAX_SAFE_INTEGER },
 };
 
 export async function checkAndIncrement(
@@ -202,10 +196,10 @@ async function callOpenAI(opts: CallLLMOptions): Promise<string> {
 export async function callLLM(opts: CallLLMOptions): Promise<string> {
   const errors: string[] = [];
   const chain = [
-    { name: "groq", fn: callGroq },        // ← Fastest, goes first
-    { name: "gemini", fn: callGemini },     // ← Fallback
-    { name: "emergent", fn: callEmergent }, // ← Fallback
-    { name: "openai", fn: callOpenAI },     // ← Last resort
+    { name: "groq",     fn: callGroq },
+    { name: "gemini",   fn: callGemini },
+    { name: "emergent", fn: callEmergent },
+    { name: "openai",   fn: callOpenAI },
   ];
 
   for (const provider of chain) {
