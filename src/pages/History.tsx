@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Brain, Phone, Download, Clock, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { exportMarkdownToDocx } from "@/lib/docxExport";
+import { exportMarkdownToDocx, exportTalentReportToDocx, exportInterviewToDocx } from "@/lib/docxExport";
 import { toast } from "sonner";
 import PageHeader from "@/components/PageHeader";
 
@@ -45,61 +45,9 @@ function timeAgo(date: string) {
 function parseQuestions(raw: string) {
   try {
     const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
-    const categories = Object.entries(parsed);
-    return categories as [string, any[]][];
+    return Object.entries(parsed) as [string, any[]][];
   } catch {
     return null;
-  }
-}
-
-function downloadTxt(content: string, filename: string) {
-  const blob = new Blob([content], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function questionsToText(raw: string): string {
-  const categories = parseQuestions(raw);
-  if (!categories) return raw;
-  let text = "";
-  for (const [cat, questions] of categories) {
-    text += `\n== ${cat.toUpperCase()} ==\n\n`;
-    if (Array.isArray(questions)) {
-      questions.forEach((q: any, i: number) => {
-        text += `Q${i + 1}: ${q.question}\n`;
-        text += `Difficulty: ${q.difficulty} | Category: ${q.category}\n`;
-        if (q.ideal_answer_points?.length) {
-          text += `Key Points:\n`;
-          q.ideal_answer_points.forEach((p: string) => { text += `  • ${p}\n`; });
-        }
-        text += "\n";
-      });
-    }
-  }
-  return text;
-}
-
-function talentToText(raw: string): string {
-  try {
-    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
-    let text = "";
-    for (const [key, value] of Object.entries(parsed)) {
-      text += `\n== ${key.replace(/_/g, " ").toUpperCase()} ==\n`;
-      if (Array.isArray(value)) {
-        value.forEach((v: any) => { text += `  • ${typeof v === "object" ? JSON.stringify(v) : v}\n`; });
-      } else if (typeof value === "object") {
-        text += JSON.stringify(value, null, 2) + "\n";
-      } else {
-        text += `${value}\n`;
-      }
-    }
-    return text;
-  } catch {
-    return raw;
   }
 }
 
@@ -248,11 +196,14 @@ export default function History() {
                         <Button variant="outline" size="sm" onClick={() => setExpandedId(isExpanded ? null : rec.id)}>
                           {isExpanded ? "Hide" : "View"}
                         </Button>
-                        <Button size="sm" onClick={() => {
-                          downloadTxt(questionsToText(rec.questions), `interview-questions-${rec.id.slice(0, 8)}.txt`);
-                          toast.success("Downloaded!");
+                        <Button size="sm" onClick={async () => {
+                          try {
+                            const parsed = typeof rec.questions === "string" ? JSON.parse(rec.questions) : rec.questions;
+                            await exportInterviewToDocx(parsed, `interview-${rec.id.slice(0, 8)}`);
+                            toast.success("Downloaded!");
+                          } catch { toast.error("Download failed"); }
                         }}>
-                          <Download className="h-4 w-4 mr-1.5" /> .txt
+                          <Download className="h-4 w-4 mr-1.5" /> .docx
                         </Button>
                       </div>
                     </div>
@@ -307,11 +258,14 @@ export default function History() {
                         <Button variant="outline" size="sm" onClick={() => setExpandedId(isExpanded ? null : rec.id)}>
                           {isExpanded ? "Hide" : "View"}
                         </Button>
-                        <Button size="sm" onClick={() => {
-                          downloadTxt(talentToText(rec.result), `talent-analysis-${rec.id.slice(0, 8)}.txt`);
-                          toast.success("Downloaded!");
+                        <Button size="sm" onClick={async () => {
+                          try {
+                            const parsed = typeof rec.result === "string" ? JSON.parse(rec.result) : rec.result;
+                            await exportTalentReportToDocx(parsed, `talent-${rec.id.slice(0, 8)}`);
+                            toast.success("Downloaded!");
+                          } catch { toast.error("Download failed"); }
                         }}>
-                          <Download className="h-4 w-4 mr-1.5" /> .txt
+                          <Download className="h-4 w-4 mr-1.5" /> .docx
                         </Button>
                       </div>
                     </div>
