@@ -176,6 +176,46 @@ export async function exportInterviewToDocx(questions: Record<string, any[]>, fi
   const NAVY = "0D2B55";
   const LIGHT_BLUE = "E8F0FA";
   const WHITE = "FFFFFF";
+  const RED = "CC0000";
+  const GREEN = "1A6B3C";
+
+  const QUESTION_SECTIONS = ["technical", "behavioral", "situational", "culture_fit", "role_specific"];
+
+  const sectionHeader = (text: string) => new Paragraph({
+    children: [new TextRun({ text, bold: true, color: WHITE, size: 24, font: "Arial" })],
+    shading: { fill: NAVY, type: ShadingType.CLEAR },
+    spacing: { before: 300, after: 100 },
+    indent: { left: 100, right: 100 },
+  });
+
+  const makeTableWithBullets = (headers: string[], rows: (string | string[])[][], colWidths: number[]) => new Table({
+    width: { size: 9360, type: WidthType.DXA },
+    columnWidths: colWidths,
+    rows: [
+      new TableRow({
+        children: headers.map((h, i) => new TableCell({
+          width: { size: colWidths[i], type: WidthType.DXA },
+          shading: { fill: NAVY, type: ShadingType.CLEAR },
+          margins: { top: 80, bottom: 80, left: 120, right: 120 },
+          children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, color: WHITE, size: 18, font: "Arial" })] })]
+        }))
+      }),
+      ...rows.map((row, ri) => new TableRow({
+        children: row.map((cell, ci) => {
+          const lines = Array.isArray(cell) ? cell : [cell];
+          return new TableCell({
+            width: { size: colWidths[ci], type: WidthType.DXA },
+            shading: { fill: ri % 2 === 0 ? WHITE : LIGHT_BLUE, type: ShadingType.CLEAR },
+            margins: { top: 80, bottom: 80, left: 120, right: 120 },
+            children: lines.map(line => new Paragraph({
+              bullet: lines.length > 1 ? { level: 0 } : undefined,
+              children: [new TextRun({ text: line || "", size: 18, font: "Arial" })]
+            }))
+          });
+        })
+      }))
+    ]
+  });
 
   const children: any[] = [
     new Paragraph({
@@ -185,21 +225,53 @@ export async function exportInterviewToDocx(questions: Record<string, any[]>, fi
     }),
   ];
 
-  for (const [category, qs] of Object.entries(questions)) {
-    children.push(
-      new Paragraph({
-        children: [new TextRun({ text: category.replace(/_/g, " ").toUpperCase(), bold: true, color: WHITE, size: 24, font: "Arial" })],
-        shading: { fill: NAVY, type: ShadingType.CLEAR },
-        spacing: { before: 300, after: 100 },
-        indent: { left: 100, right: 100 },
-      })
-    );
+  for (const [sectionKey, items] of Object.entries(questions)) {
+    if (!Array.isArray(items) || items.length === 0) continue;
 
-    if (!Array.isArray(qs)) continue;
+    // ── INTERVIEW STRUCTURE ──────────────────────────────────────
+    if (sectionKey === "interview_structure") {
+      children.push(sectionHeader("📋 INTERVIEW STRUCTURE"));
+      children.push(new Paragraph({ children: [], spacing: { after: 60 } }));
+      children.push(makeTableWithBullets(
+        ["Round", "Name", "Duration", "Focus", "Interviewer"],
+        items.map((r: any) => [
+          r.round || "",
+          r.name || "",
+          r.duration_minutes ? `${r.duration_minutes} mins` : "",
+          r.focus || "",
+          r.interviewer || "",
+        ]),
+        [900, 2000, 900, 3660, 1900]
+      ));
+      children.push(new Paragraph({ children: [], spacing: { after: 200 } }));
+      continue;
+    }
 
-    qs.forEach((q: any, i: number) => {
-      children.push(
-        new Paragraph({
+    // ── SCORECARD ────────────────────────────────────────────────
+    if (sectionKey === "scorecard") {
+      children.push(sectionHeader("🏆 EVALUATION SCORECARD"));
+      children.push(new Paragraph({ children: [], spacing: { after: 60 } }));
+      children.push(makeTableWithBullets(
+        ["Criteria", "Weight", "Green Flags ✅", "Red Flags 🚩"],
+        items.map((s: any) => [
+          s.criteria || "",
+          s.weight || "",
+          Array.isArray(s.green_flags) ? s.green_flags : [s.green_flags || ""],
+          Array.isArray(s.red_flags) ? s.red_flags : [s.red_flags || ""],
+        ]),
+        [2000, 800, 3280, 3280]
+      ));
+      children.push(new Paragraph({ children: [], spacing: { after: 200 } }));
+      continue;
+    }
+
+    // ── QUESTION SECTIONS ────────────────────────────────────────
+    if (QUESTION_SECTIONS.includes(sectionKey)) {
+      children.push(sectionHeader(sectionKey.replace(/_/g, " ").toUpperCase()));
+
+      items.forEach((q: any, i: number) => {
+        // Question text
+        children.push(new Paragraph({
           children: [
             new TextRun({ text: `Q${i + 1}: `, bold: true, color: NAVY, size: 20, font: "Arial" }),
             new TextRun({ text: q.question || "", size: 20, font: "Arial" }),
@@ -207,43 +279,125 @@ export async function exportInterviewToDocx(questions: Record<string, any[]>, fi
           shading: { fill: i % 2 === 0 ? WHITE : LIGHT_BLUE, type: ShadingType.CLEAR },
           spacing: { before: 120, after: 60 },
           indent: { left: 100 },
-        })
-      );
+        }));
 
-      children.push(
-        new Paragraph({
-          children: [
-            new TextRun({ text: "Difficulty: ", bold: true, size: 18, font: "Arial", color: "666666" }),
-            new TextRun({ text: q.difficulty || "", size: 18, font: "Arial" }),
-            new TextRun({ text: "   Type: ", bold: true, size: 18, font: "Arial", color: "666666" }),
-            new TextRun({ text: q.category || "", size: 18, font: "Arial" }),
-          ],
-          indent: { left: 100 },
-          spacing: { after: 60 },
-        })
-      );
+        // Difficulty + Category (technical)
+        if (q.difficulty || q.category) {
+          children.push(new Paragraph({
+            children: [
+              new TextRun({ text: "Difficulty: ", bold: true, size: 18, font: "Arial", color: "666666" }),
+              new TextRun({ text: q.difficulty || "—", size: 18, font: "Arial" }),
+              new TextRun({ text: "   Category: ", bold: true, size: 18, font: "Arial", color: "666666" }),
+              new TextRun({ text: q.category || "—", size: 18, font: "Arial" }),
+            ],
+            indent: { left: 100 },
+            spacing: { after: 60 },
+          }));
+        }
 
-      if (Array.isArray(q.ideal_answer_points) && q.ideal_answer_points.length > 0) {
-        children.push(
-          new Paragraph({
+        // Competency (behavioral)
+        if (q.competency) {
+          children.push(new Paragraph({
+            children: [
+              new TextRun({ text: "Competency: ", bold: true, size: 18, font: "Arial", color: "666666" }),
+              new TextRun({ text: q.competency, size: 18, font: "Arial" }),
+            ],
+            indent: { left: 100 },
+            spacing: { after: 60 },
+          }));
+        }
+
+        // What to assess (situational / culture_fit)
+        if (q.what_to_assess) {
+          children.push(new Paragraph({
+            children: [
+              new TextRun({ text: "What to Assess: ", bold: true, size: 18, font: "Arial", color: NAVY }),
+              new TextRun({ text: q.what_to_assess, size: 18, font: "Arial" }),
+            ],
+            indent: { left: 100 },
+            spacing: { after: 60 },
+          }));
+        }
+
+        // Rationale (role_specific)
+        if (q.rationale) {
+          children.push(new Paragraph({
+            children: [
+              new TextRun({ text: "Rationale: ", bold: true, size: 18, font: "Arial", color: NAVY }),
+              new TextRun({ text: q.rationale, size: 18, font: "Arial" }),
+            ],
+            indent: { left: 100 },
+            spacing: { after: 60 },
+          }));
+        }
+
+        // Ideal answer points
+        if (Array.isArray(q.ideal_answer_points) && q.ideal_answer_points.length > 0) {
+          children.push(new Paragraph({
             children: [new TextRun({ text: "Key Answer Points:", bold: true, size: 18, font: "Arial", color: NAVY })],
             indent: { left: 100 },
             spacing: { after: 40 },
-          })
-        );
-        q.ideal_answer_points.forEach((pt: string) => {
-          children.push(
-            new Paragraph({
+          }));
+          q.ideal_answer_points.forEach((pt: string) => {
+            children.push(new Paragraph({
               bullet: { level: 0 },
               children: [new TextRun({ text: pt, size: 18, font: "Arial" })],
-              spacing: { after: 40 },
-            })
-          );
-        });
-      }
+              spacing: { after: 30 },
+            }));
+          });
+        }
 
-      children.push(new Paragraph({ children: [new TextRun("")], spacing: { after: 80 } }));
-    });
+        // STAR prompts (behavioral)
+        if (Array.isArray(q.star_prompts) && q.star_prompts.length > 0) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: "STAR Prompts:", bold: true, size: 18, font: "Arial", color: NAVY })],
+            indent: { left: 100 },
+            spacing: { before: 60, after: 40 },
+          }));
+          q.star_prompts.forEach((pt: string) => {
+            children.push(new Paragraph({
+              bullet: { level: 0 },
+              children: [new TextRun({ text: pt, size: 18, font: "Arial" })],
+              spacing: { after: 30 },
+            }));
+          });
+        }
+
+        // Positive signals (culture_fit)
+        if (Array.isArray(q.positive_signals) && q.positive_signals.length > 0) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: "✅ Positive Signals:", bold: true, size: 18, font: "Arial", color: GREEN })],
+            indent: { left: 100 },
+            spacing: { before: 60, after: 40 },
+          }));
+          q.positive_signals.forEach((pt: string) => {
+            children.push(new Paragraph({
+              bullet: { level: 0 },
+              children: [new TextRun({ text: pt, size: 18, font: "Arial" })],
+              spacing: { after: 30 },
+            }));
+          });
+        }
+
+        // Red flags
+        if (Array.isArray(q.red_flags) && q.red_flags.length > 0) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: "🚩 Red Flags:", bold: true, size: 18, font: "Arial", color: RED })],
+            indent: { left: 100 },
+            spacing: { before: 60, after: 40 },
+          }));
+          q.red_flags.forEach((pt: string) => {
+            children.push(new Paragraph({
+              bullet: { level: 0 },
+              children: [new TextRun({ text: pt, size: 18, font: "Arial", color: RED })],
+              spacing: { after: 30 },
+            }));
+          });
+        }
+
+        children.push(new Paragraph({ children: [new TextRun("")], spacing: { after: 100 } }));
+      });
+    }
   }
 
   const doc = new Document({
