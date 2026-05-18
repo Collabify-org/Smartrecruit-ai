@@ -43,6 +43,7 @@ export async function authUser(req: Request) {
 type UsageColumn = "usage_jd" | "usage_interview" | "usage_talent";
 
 const PLAN_LIMITS: Record<string, Record<UsageColumn, number>> = {
+  trial:        { usage_jd: 3,                       usage_interview: 3,                       usage_talent: 3 },
   free:         { usage_jd: 3,                       usage_interview: 3,                       usage_talent: 3 },
   starter:      { usage_jd: 10,                      usage_interview: 10,                      usage_talent: 10 },
   professional: { usage_jd: 50,                      usage_interview: 50,                      usage_talent: 50 },
