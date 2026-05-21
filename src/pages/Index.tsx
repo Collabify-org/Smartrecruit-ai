@@ -179,7 +179,7 @@ export default function Index() {
                 <iframe
                   width="100%"
                   height="100%"
-                  src="https://www.youtube.com/embed/-dxBAKY1C_Q?rel=0&modestbranding=1"
+                  src="https://www.youtube.com/embed/3ZRKIXZPugo?rel=0&modestbranding=1"
                   title="Synlumex AI — Full Product Demo | AI Hiring OS"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
