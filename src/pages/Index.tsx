@@ -33,7 +33,7 @@ export default function Index() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "Synlumex — AI Job Description Generator, Talent Intelligence & Interview Questions | by Collabify";
+    document.title = "Synlumex — AI Job Description Generator, Talent Intelligence & Interview Questions | Hire 10x Faster";
   }, []);
 
   return (
@@ -42,13 +42,12 @@ export default function Index() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3" aria-label="Synlumex home">
-  <img
-    src="/synlumex-logo.png.png"
-    alt="Synlumex"
-    className="h-16 w-auto object-contain"
-  />
-            
-</Link>
+            <img
+              src="/synlumex-logo.png.png"
+              alt="Synlumex"
+              className="h-16 w-auto object-contain"
+            />
+          </Link>
           <nav className="hidden lg:flex items-center gap-7" aria-label="Primary">
             {NAV.map((n) => (
               <a key={n.label} href={n.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">{n.label}</a>
@@ -96,13 +95,10 @@ export default function Index() {
               New: Talent Intelligence Engine v2 — live now
             </div>
             <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-foreground max-w-4xl mx-auto leading-[1.05]">
-              Hire 10× faster with the <span className="text-gradient-brand">AI hiring OS</span> built for startups
+              Stop spending 12 hours on hiring. <span className="text-gradient-brand">Do it in 5 minutes</span> with AI.
             </h1>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Synlumex gives founders, recruiters and lean hiring teams three superpowers:
-              an <strong className="text-foreground font-medium">AI Job Description Generator</strong> that writes JDs in your own format,
-              a <strong className="text-foreground font-medium">Talent Intelligence Engine</strong> that decodes salaries, skills and sourcing in seconds,
-              and an <strong className="text-foreground font-medium">Interview Questions</strong> generator that creates role-specific phone screening sheets instantly.
+              Synlumex is the AI hiring OS used by founders, recruiters and agencies to write job descriptions, decode salary markets, and generate complete interview kits — instantly. No ATS bloat. No manual research. Just results.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to={primaryCta}>
@@ -116,7 +112,7 @@ export default function Index() {
                 </Button>
               </a>
             </div>
-            <p className="mt-4 text-xs text-muted-foreground">No credit card required · 2-minute setup · Cancel anytime</p>
+            <p className="mt-4 text-xs text-muted-foreground">No credit card required · 3-day free trial · Cancel anytime</p>
 
             {/* Hero product visual */}
             <div className="mt-14 mx-auto max-w-5xl px-1 sm:px-0">
@@ -124,18 +120,18 @@ export default function Index() {
             </div>
           </div>
         </section>
-        
-{/* VIDEO WALKTHROUGH */}
+
+        {/* VIDEO WALKTHROUGH */}
         <section className="border-t border-border bg-card">
           <div className="max-w-6xl mx-auto px-6 py-20">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
-                <div className="text-xs uppercase tracking-widest text-brand font-semibold">2-minute walkthrough</div>
+                <div className="text-xs uppercase tracking-widest text-brand font-semibold">3-minute walkthrough</div>
                 <h2 className="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight leading-tight">
-                  See how we remove manual hiring work — in seconds
+                  Watch 12 hours of hiring work disappear in minutes
                 </h2>
                 <p className="mt-4 text-muted-foreground text-sm leading-relaxed">
-                  A full walkthrough of all 3 features. No fluff, no slides — just the real product doing real work.
+                  A full walkthrough of all 3 features. No fluff, no slides — just the real product doing real work. See exactly what your team gets from day one.
                 </p>
                 <div className="mt-8 space-y-6">
                   <div className="flex items-start gap-3">
@@ -144,7 +140,7 @@ export default function Index() {
                     </div>
                     <div>
                       <div className="font-semibold text-sm">JD Generator</div>
-                      <div className="text-xs text-muted-foreground mt-0.5">Write a fully structured, on-brand job description in under 60 seconds — no copy-pasting, no reformatting.</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">A fully structured, publish-ready job description in under 60 seconds. Export as .docx instantly.</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -153,7 +149,7 @@ export default function Index() {
                     </div>
                     <div>
                       <div className="font-semibold text-sm">Talent Intelligence</div>
-                      <div className="text-xs text-muted-foreground mt-0.5">Paste any JD and instantly get salary benchmarks, Boolean strings, and a ready-to-execute hiring strategy.</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">Paste any JD. Get live salary benchmarks, Boolean strings, sourcing platforms, top companies to poach from — all in one report.</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -161,8 +157,8 @@ export default function Index() {
                       <Phone className="h-4 w-4" />
                     </div>
                     <div>
-                      <div className="font-semibold text-sm">Interview Questions</div>
-                      <div className="text-xs text-muted-foreground mt-0.5">Get a complete phone screening sheet with role-specific questions and candidate fields — download as .docx instantly.</div>
+                      <div className="font-semibold text-sm">Interview Question Bank</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">7 question categories — Technical, Behavioral, Situational, Culture Fit, Role Specific, Structure + Scorecard. Your team walks into every call fully prepared.</div>
                     </div>
                   </div>
                 </div>
@@ -177,22 +173,24 @@ export default function Index() {
                   </a>
                 </div>
               </div>
-              <div className="rounded-2xl overflow-hidden border border-border shadow-soft-lg bg-secondary aspect-video flex items-center justify-center">
-                <div className="text-center space-y-3 px-6">
-                  <div className="h-14 w-14 rounded-full bg-brand/10 text-brand flex items-center justify-center mx-auto">
-                    <ArrowRight className="h-6 w-6" />
-                  </div>
-                  <div className="font-semibold text-sm">Video coming soon</div>
-                  <div className="text-xs text-muted-foreground">We're recording the walkthrough — check back shortly or book a live demo below.</div>
-                </div>
+
+              {/* ✅ YOUTUBE VIDEO EMBED */}
+              <div className="rounded-2xl overflow-hidden border border-border shadow-soft-lg aspect-video">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src="https://www.youtube.com/embed/0KFvCpMDQl8?rel=0&modestbranding=1"
+                  title="Synlumex AI — Full Product Demo | AI Hiring OS"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
               </div>
             </div>
           </div>
         </section>
 
-        {/* PRODUCT DEMOS (3 looping) */}
-        <ProductDemos />
-        {/* PRODUCT DEMOS (3 looping) */}
+        {/* PRODUCT DEMOS */}
         <ProductDemos />
 
         {/* LOGO STRIP */}
@@ -258,14 +256,15 @@ export default function Index() {
             reverse
             tag="Talent Intelligence Engine"
             icon={Brain}
-            title="Decode the talent market in seconds."
+            title="Decode the entire hiring market in seconds."
             pain="You're hiring blind: no idea what to pay, who else is hiring, or which keywords actually surface candidates."
-            solution="Drop in any JD. Synlumex returns salary benchmarks, similar companies hiring the same role, trending skills, Boolean sourcing strings and a recommended hiring strategy."
+            solution="Drop in any JD. Synlumex returns salary benchmarks, similar companies hiring the same role, trending skills, Boolean sourcing strings and a recommended hiring strategy — all in one downloadable report."
             bullets={[
               "Salary benchmarks by role, level and region",
-              "Similar companies hiring the same role",
-              "Skills and seniority trends",
-              "Ready-to-paste Boolean sourcing strings",
+              "Top companies to source candidates from",
+              "10 ready-to-use Boolean search strings",
+              "Best platforms to post and source",
+              "Ideal candidate persona + red flags",
               "AI-recommended hiring strategy",
             ]}
             visual={
@@ -285,17 +284,18 @@ export default function Index() {
           />
 
           <FeatureBlock
-            tag="Interview Questions Generator"
+            tag="Interview Question Bank"
             icon={Phone}
             title="Walk into every call fully prepared."
             pain="HR teams scramble to prepare screening questions for every new role. Generic questions miss role-specific depth."
-            solution="Paste any JD and Synlumex generates a complete phone screening sheet — role-specific questions, candidate detail fields, CTC, notice period, feedback section — ready in seconds."
+            solution="Paste any JD and Synlumex generates a complete interview kit — 7 question categories, evaluation scorecard with weighted criteria, green flags, red flags, and a full interview structure. Download everything as .docx in one click."
             bullets={[
-              "Role-specific questions generated from JD",
-              "Complete candidate detail fields included",
-              "CTC, notice period, location capture",
-              "Level 1 feedback field built in",
-              "Download as .docx in one click",
+              "Technical, Behavioral, Situational questions",
+              "Culture Fit + Role Specific question sets",
+              "Full interview structure with timings",
+              "Evaluation scorecard with weighted criteria",
+              "Green flags and red flags per competency",
+              "Download complete kit as .docx instantly",
             ]}
             visual={
               <BrowserFrame title="Interview Questions · Phone Screen Sheet">
@@ -335,9 +335,9 @@ export default function Index() {
           <div className="max-w-6xl mx-auto px-6 py-24">
             <SectionHeader eyebrow="Use cases" title="Built for the way modern teams hire" />
             <div className="grid md:grid-cols-3 gap-5 mt-10">
-              <UseCase icon={Rocket} title="Startup founders" desc="Write your first 10 JDs without hiring a recruiter. Know what to pay before you post. Generate phone screening questions for every role instantly." />
-              <UseCase icon={Briefcase} title="In-house recruiters" desc="Standardize JDs across teams. Source faster with AI-generated Boolean strings. Standardize your phone screening process with role-specific question sheets." />
-              <UseCase icon={Users} title="Hiring agencies" desc="Spin up market intelligence for every client brief in minutes, not days. Prepare screening sheets for every client brief in minutes." />
+              <UseCase icon={Rocket} title="Startup founders" desc="Write your first 10 JDs without hiring a recruiter. Know exactly what to pay before you post. Generate phone screening questions for every role instantly." />
+              <UseCase icon={Briefcase} title="In-house recruiters" desc="Standardize JDs across teams. Source faster with AI-generated Boolean strings. Walk into every interview fully prepared with role-specific question sheets." />
+              <UseCase icon={Users} title="Hiring agencies" desc="Spin up complete market intelligence for every client brief in minutes, not days. Deliver salary reports, sourcing strategies and interview kits at scale." />
             </div>
           </div>
         </section>
@@ -431,7 +431,7 @@ export default function Index() {
               <h2 className="text-3xl font-semibold tracking-tight">Book a demo or join the waitlist</h2>
               <p className="mt-3 text-muted-foreground">Get a personalized walkthrough, or be the first to hear about new features. We reply within 2 hours on weekdays.</p>
               <div className="mt-6 space-y-3 text-sm">
-                <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-brand" /> hello@Synlumex.ai</div>
+                <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-brand" /> team@collabifyspace.com</div>
                 <div className="flex items-center gap-2"><Headphones className="h-4 w-4 text-brand" /> Avg. reply: under 2 hours</div>
                 <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-brand" /> GDPR-compliant data handling</div>
               </div>
@@ -635,7 +635,7 @@ function PricingPlans({ primaryCta, primaryCtaLabel }: { primaryCta: string; pri
       <div className="grid md:grid-cols-3 gap-5 mt-12">
         <PriceCard
           name="Starter"
-          price={fmt("₹999", "$49")}
+          price={fmt("₹1,999", "$49")}
           period="/ month"
           desc="For individual recruiters and small HR teams"
           features={[
@@ -654,7 +654,7 @@ function PricingPlans({ primaryCta, primaryCtaLabel }: { primaryCta: string; pri
         <PriceCard
           highlight
           name="Professional"
-          price={fmt("₹2,999", "$99")}
+          price={fmt("₹3,999", "$99")}
           period="/ month"
           desc="For growing companies and active hiring teams"
           features={[
