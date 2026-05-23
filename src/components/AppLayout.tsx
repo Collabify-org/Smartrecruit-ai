@@ -1,10 +1,11 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { FileText, Brain, CreditCard, Settings as SettingsIcon, Menu, X, Mic, Clock } from "lucide-react";
+import { FileText, Brain, CreditCard, Settings as SettingsIcon, Menu, X, Mic, Clock, Home } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Topbar from "./Topbar";
 
 const nav = [
+  { to: "/app", label: "Dashboard", icon: Home },
   { to: "/app/jd-generator", label: "JD Generator", icon: FileText },
   { to: "/app/talent-intelligence", label: "Talent Intelligence", icon: Brain },
   { to: "/app/interview-questions", label: "Interview Questions", icon: Mic },
