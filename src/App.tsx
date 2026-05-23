@@ -13,12 +13,14 @@ import Billing from "./pages/Billing";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import History from "./pages/History";
+import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Navigate } from "react-router-dom";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 
 const queryClient = new QueryClient();
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -31,7 +33,8 @@ const App = () => (
           <Route path="/signup" element={<Navigate to="/login" replace />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
-              <Route path="/app" element={<Navigate to="/app/jd-generator" replace />} />
+              <Route path="/app" element={<Dashboard />} />
+              <Route path="/app/dashboard" element={<Dashboard />} />
               <Route path="/app/jd-generator" element={<JDGenerator />} />
               <Route path="/app/talent-intelligence" element={<TalentIntelligence />} />
               <Route path="/app/interview-questions" element={<InterviewQuestions />} />
@@ -52,4 +55,5 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+
 export default App;
