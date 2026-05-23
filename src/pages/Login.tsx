@@ -32,19 +32,19 @@ export default function Login() {
           <div className="h-9 w-9 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
             <Sparkles className="h-5 w-5" />
           </div>
-          <span className="font-semibold">SmartRecruit AI</span>
+          <span className="font-semibold">Synlumex AI</span>
         </Link>
         <div>
-          <h2 className="text-3xl font-semibold leading-tight max-w-sm">"SmartRecruit cut our JD time from 2 hours to 2 minutes."</h2>
+          <h2 className="text-3xl font-semibold leading-tight max-w-sm">"Synlumex cut our JD time from 2 hours to 2 minutes."</h2>
           <p className="mt-3 opacity-80 text-sm">— Head of Talent, Series B Startup</p>
         </div>
-        <div className="text-xs opacity-70">© {new Date().getFullYear()} SmartRecruit AI</div>
+        <div className="text-xs opacity-70">© {new Date().getFullYear()} Synlumex AI</div>
       </div>
       <div className="flex items-center justify-center p-6">
         <form onSubmit={submit} className="w-full max-w-sm space-y-5 animate-fade-in">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-            <p className="text-sm text-muted-foreground mt-1">Log in to your SmartRecruit workspace.</p>
+            <p className="text-sm text-muted-foreground mt-1">Log in to your Synlumex workspace.</p>
           </div>
           <div className="space-y-2">
             <Label>Email</Label>
