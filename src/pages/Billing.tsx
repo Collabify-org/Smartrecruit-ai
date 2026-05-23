@@ -9,8 +9,8 @@ import { Check, Download, Sparkles, Zap, Crown, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const PLANS = [
-  { id: "starter", name: "Starter", price: "₹999", features: ["10 JDs / month", "10 analyses / month", "10 interview sets / month", "Email support"] },
-  { id: "professional", name: "Professional", price: "₹2,999", features: ["50 JDs / month", "50 analyses / month", "50 interview sets / month", "Priority support"], popular: true },
+  { id: "starter", name: "Starter", price: "₹1,999", features: ["10 JDs / month", "10 analyses / month", "10 interview sets / month", "Email support"] },
+  { id: "professional", name: "Professional", price: "₹3,999", features: ["50 JDs / month", "50 analyses / month", "50 interview sets / month", "Priority support"], popular: true },
   { id: "enterprise", name: "Enterprise", price: "Custom", features: ["Unlimited JDs", "Unlimited analyses", "Unlimited interview sets", "Dedicated support"] },
 ];
 
