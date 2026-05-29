@@ -1,23 +1,35 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   FileText,
   Brain,
   Phone,
   Clock,
   Download,
-  Filter,
   Trash2,
   Loader2,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 import { supabase } from "@/integrations/supabase/client";
+
 import { toast } from "sonner";
+
+import {
+  exportMarkdownToDocx,
+  exportTalentReportToDocx,
+} from "@/lib/docxExport";
 
 import {
   Document,
@@ -28,18 +40,21 @@ import {
   TableCell,
   TextRun,
   WidthType,
-  ShadingType,
   HeadingLevel,
+  ShadingType,
 } from "docx";
 
 import { saveAs } from "file-saver";
 
-import {
-  exportMarkdownToDocx,
-  exportTalentReportToDocx,
-} from "@/lib/docxExport";
+/* =========================================================
+   TYPES
+========================================================= */
 
-type HistoryTab = "all" | "jd" | "talent" | "interview";
+type HistoryTab =
+  | "all"
+  | "jd"
+  | "talent"
+  | "interview";
 
 interface HistoryItem {
   id: string;
@@ -49,8 +64,13 @@ interface HistoryItem {
   created_at: string;
 }
 
+/* =========================================================
+   TIME AGO
+========================================================= */
+
 function timeAgo(date: string) {
-  const diff = Date.now() - new Date(date).getTime();
+  const diff =
+    Date.now() - new Date(date).getTime();
 
   const mins = Math.floor(diff / 60000);
   const hours = Math.floor(mins / 60);
@@ -64,20 +84,20 @@ function timeAgo(date: string) {
 }
 
 /* =========================================================
-   INTERVIEW DOC EXPORT
+   INTERVIEW DOCX EXPORT
 ========================================================= */
 
 async function downloadInterviewDocx(
   title: string,
   rawJson: string
 ) {
-  const NAVY = "1a3a5c";
+  const NAVY = "0D2B55";
 
-  const navyCell = (text: string) =>
+  const headerCell = (text: string) =>
     new TableCell({
       shading: {
-        type: ShadingType.SOLID,
-        color: NAVY,
+        type: ShadingType.CLEAR,
+        fill: NAVY,
       },
 
       children: [
@@ -85,8 +105,8 @@ async function downloadInterviewDocx(
           children: [
             new TextRun({
               text,
-              color: "FFFFFF",
               bold: true,
+              color: "FFFFFF",
               size: 20,
             }),
           ],
@@ -94,13 +114,16 @@ async function downloadInterviewDocx(
       ],
     });
 
-  const bodyCell = (text: string, color = "000000") =>
+  const bodyCell = (
+    text: string,
+    color = "222222"
+  ) =>
     new TableCell({
       children: [
         new Paragraph({
           children: [
             new TextRun({
-              text: text ?? "",
+              text: text || "",
               size: 18,
               color,
             }),
@@ -111,7 +134,7 @@ async function downloadInterviewDocx(
 
   const listCell = (
     items: string[],
-    color = "333333"
+    color = "222222"
   ) =>
     new TableCell({
       children: (items || []).map(
@@ -138,7 +161,7 @@ async function downloadInterviewDocx(
 
       spacing: {
         before: 300,
-        after: 100,
+        after: 120,
       },
 
       children: [
@@ -146,7 +169,7 @@ async function downloadInterviewDocx(
           text,
           bold: true,
           color: NAVY,
-          size: 26,
+          size: 28,
         }),
       ],
     });
@@ -160,34 +183,34 @@ async function downloadInterviewDocx(
     return;
   }
 
-  const sections: any[] = [];
+  const children: any[] = [];
 
-  sections.push(
+  children.push(
     new Paragraph({
+      spacing: {
+        after: 300,
+      },
+
       children: [
         new TextRun({
-          text: "Interview Question Bank",
+          text: "INTERVIEW QUESTION BANK",
           bold: true,
-          size: 36,
           color: NAVY,
+          size: 36,
         }),
       ],
-
-      spacing: {
-        after: 200,
-      },
     })
   );
 
-  /* =========================================================
+  /* ==============================
      TECHNICAL
-  ========================================================= */
+  ============================== */
 
-  sections.push(
+  children.push(
     sectionHeading("1. Technical Questions")
   );
 
-  sections.push(
+  children.push(
     new Table({
       width: {
         size: 100,
@@ -197,11 +220,11 @@ async function downloadInterviewDocx(
       rows: [
         new TableRow({
           children: [
-            navyCell("#"),
-            navyCell("Question"),
-            navyCell("Level"),
-            navyCell("Category"),
-            navyCell("Ideal Answer Points"),
+            headerCell("#"),
+            headerCell("Question"),
+            headerCell("Level"),
+            headerCell("Category"),
+            headerCell("Ideal Answer"),
           ],
         }),
 
@@ -209,11 +232,13 @@ async function downloadInterviewDocx(
           (q: any, i: number) =>
             new TableRow({
               children: [
-                bodyCell(`${i + 1}`),
+                bodyCell((i + 1).toString()),
                 bodyCell(q.question),
                 bodyCell(q.difficulty),
                 bodyCell(q.category),
-                listCell(q.ideal_answer_points),
+                listCell(
+                  q.ideal_answer_points || []
+                ),
               ],
             })
         ),
@@ -221,15 +246,15 @@ async function downloadInterviewDocx(
     })
   );
 
-  /* =========================================================
+  /* ==============================
      BEHAVIORAL
-  ========================================================= */
+  ============================== */
 
-  sections.push(
+  children.push(
     sectionHeading("2. Behavioral Questions")
   );
 
-  sections.push(
+  children.push(
     new Table({
       width: {
         size: 100,
@@ -239,11 +264,11 @@ async function downloadInterviewDocx(
       rows: [
         new TableRow({
           children: [
-            navyCell("#"),
-            navyCell("Question"),
-            navyCell("Competency"),
-            navyCell("STAR Prompts"),
-            navyCell("Red Flags"),
+            headerCell("#"),
+            headerCell("Question"),
+            headerCell("Competency"),
+            headerCell("STAR Prompts"),
+            headerCell("Red Flags"),
           ],
         }),
 
@@ -251,219 +276,14 @@ async function downloadInterviewDocx(
           (q: any, i: number) =>
             new TableRow({
               children: [
-                bodyCell(`${i + 1}`),
+                bodyCell((i + 1).toString()),
                 bodyCell(q.question),
                 bodyCell(q.competency),
-                listCell(q.star_prompts),
-                listCell(q.red_flags, "CC0000"),
-              ],
-            })
-        ),
-      ],
-    })
-  );
-
-  /* =========================================================
-     SITUATIONAL
-  ========================================================= */
-
-  sections.push(
-    sectionHeading("3. Situational Questions")
-  );
-
-  sections.push(
-    new Table({
-      width: {
-        size: 100,
-        type: WidthType.PERCENTAGE,
-      },
-
-      rows: [
-        new TableRow({
-          children: [
-            navyCell("#"),
-            navyCell("Question"),
-            navyCell("What to Assess"),
-            navyCell("Ideal Answer Points"),
-            navyCell("Red Flags"),
-          ],
-        }),
-
-        ...(result.situational || []).map(
-          (q: any, i: number) =>
-            new TableRow({
-              children: [
-                bodyCell(`${i + 1}`),
-                bodyCell(q.question),
-                bodyCell(q.what_to_assess),
-                listCell(q.ideal_answer_points),
-                listCell(q.red_flags, "CC0000"),
-              ],
-            })
-        ),
-      ],
-    })
-  );
-
-  /* =========================================================
-     CULTURE FIT
-  ========================================================= */
-
-  sections.push(
-    sectionHeading("4. Culture Fit Questions")
-  );
-
-  sections.push(
-    new Table({
-      width: {
-        size: 100,
-        type: WidthType.PERCENTAGE,
-      },
-
-      rows: [
-        new TableRow({
-          children: [
-            navyCell("#"),
-            navyCell("Question"),
-            navyCell("What to Assess"),
-            navyCell("Positive Signals"),
-            navyCell("Red Flags"),
-          ],
-        }),
-
-        ...(result.culture_fit || []).map(
-          (q: any, i: number) =>
-            new TableRow({
-              children: [
-                bodyCell(`${i + 1}`),
-                bodyCell(q.question),
-                bodyCell(q.what_to_assess),
-                listCell(q.positive_signals, "1a5c2a"),
-                listCell(q.red_flags, "CC0000"),
-              ],
-            })
-        ),
-      ],
-    })
-  );
-
-  /* =========================================================
-     ROLE SPECIFIC
-  ========================================================= */
-
-  sections.push(
-    sectionHeading("5. Role-Specific Questions")
-  );
-
-  sections.push(
-    new Table({
-      width: {
-        size: 100,
-        type: WidthType.PERCENTAGE,
-      },
-
-      rows: [
-        new TableRow({
-          children: [
-            navyCell("#"),
-            navyCell("Question"),
-            navyCell("Why Critical"),
-            navyCell("Ideal Answer Points"),
-            navyCell("Red Flags"),
-          ],
-        }),
-
-        ...(result.role_specific || []).map(
-          (q: any, i: number) =>
-            new TableRow({
-              children: [
-                bodyCell(`${i + 1}`),
-                bodyCell(q.question),
-                bodyCell(q.rationale),
-                listCell(q.ideal_answer_points),
-                listCell(q.red_flags, "CC0000"),
-              ],
-            })
-        ),
-      ],
-    })
-  );
-
-  /* =========================================================
-     INTERVIEW STRUCTURE
-  ========================================================= */
-
-  sections.push(
-    sectionHeading("6. Interview Structure")
-  );
-
-  sections.push(
-    new Table({
-      width: {
-        size: 100,
-        type: WidthType.PERCENTAGE,
-      },
-
-      rows: [
-        new TableRow({
-          children: [
-            navyCell("Round"),
-            navyCell("Name"),
-            navyCell("Duration"),
-            navyCell("Focus"),
-            navyCell("Interviewer"),
-          ],
-        }),
-
-        ...(result.interview_structure || []).map(
-          (r: any) =>
-            new TableRow({
-              children: [
-                bodyCell(r.round),
-                bodyCell(r.name),
-                bodyCell(`${r.duration_minutes} mins`),
-                bodyCell(r.focus),
-                bodyCell(r.interviewer),
-              ],
-            })
-        ),
-      ],
-    })
-  );
-
-  /* =========================================================
-     SCORECARD
-  ========================================================= */
-
-  sections.push(
-    sectionHeading("7. Evaluation Scorecard")
-  );
-
-  sections.push(
-    new Table({
-      width: {
-        size: 100,
-        type: WidthType.PERCENTAGE,
-      },
-
-      rows: [
-        new TableRow({
-          children: [
-            navyCell("Criteria"),
-            navyCell("Weight"),
-            navyCell("Green Flags"),
-            navyCell("Red Flags"),
-          ],
-        }),
-
-        ...(result.scorecard || []).map(
-          (s: any) =>
-            new TableRow({
-              children: [
-                bodyCell(s.criteria),
-                bodyCell(s.weight),
-                listCell(s.green_flags, "1a5c2a"),
-                listCell(s.red_flags, "CC0000"),
+                listCell(q.star_prompts || []),
+                listCell(
+                  q.red_flags || [],
+                  "C62828"
+                ),
               ],
             })
         ),
@@ -474,7 +294,7 @@ async function downloadInterviewDocx(
   const doc = new Document({
     sections: [
       {
-        children: sections,
+        children,
       },
     ],
   });
@@ -483,11 +303,11 @@ async function downloadInterviewDocx(
 
   saveAs(
     blob,
-    `${title.replace(
-      /[^a-z0-9]/gi,
-      "-"
-    )}-Interview-Kit.docx`
+    title.replace(/[^a-z0-9]/gi, "-") +
+      "-Interview-Kit.docx"
   );
+
+  toast.success("Interview kit downloaded!");
 }
 
 /* =========================================================
@@ -495,28 +315,33 @@ async function downloadInterviewDocx(
 ========================================================= */
 
 export default function History() {
-
   const navigate = useNavigate();
 
-  const [items, setItems] = useState<HistoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<HistoryTab>("all");
+  const [items, setItems] = useState<
+    HistoryItem[]
+  >([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [tab, setTab] =
+    useState<HistoryTab>("all");
+
   const [expanded, setExpanded] =
     useState<string | null>(null);
 
   const [downloading, setDownloading] =
     useState<string | null>(null);
 
+  /* ==============================
+     FETCH HISTORY
+  ============================== */
+
   useEffect(() => {
     fetchHistory();
   }, []);
 
-  /* =========================================================
-     FETCH HISTORY
-  ========================================================= */
-
   async function fetchHistory() {
-
     setLoading(true);
 
     const {
@@ -565,31 +390,40 @@ export default function History() {
     ]);
 
     const all: HistoryItem[] = [
-
       ...(jdRes.data || []).map((j: any) => ({
         id: j.id,
         type: "jd" as const,
-        title: j.role_name || "Untitled JD",
+        title:
+          j.role_name || "Untitled JD",
         rawContent: j.content || "",
         created_at: j.created_at,
       })),
 
-      ...(talentRes.data || []).map((t: any) => ({
-        id: t.id,
-        type: "talent" as const,
-        title: (t.jd_input || "Talent Report").slice(0, 60),
-        rawContent: t.results || "",
-        created_at: t.created_at,
-      })),
+      ...(talentRes.data || []).map(
+        (t: any) => ({
+          id: t.id,
+          type: "talent" as const,
+          title:
+            (t.jd_input ||
+              "Talent Report"
+            ).slice(0, 60),
+          rawContent: t.results || "",
+          created_at: t.created_at,
+        })
+      ),
 
-      ...(interviewRes.data || []).map((i: any) => ({
-        id: i.id,
-        type: "interview" as const,
-        title: (i.jd_input || "Interview Kit").slice(0, 60),
-        rawContent: i.questions || "",
-        created_at: i.created_at,
-      })),
-
+      ...(interviewRes.data || []).map(
+        (i: any) => ({
+          id: i.id,
+          type: "interview" as const,
+          title:
+            (i.jd_input ||
+              "Interview Kit"
+            ).slice(0, 60),
+          rawContent: i.questions || "",
+          created_at: i.created_at,
+        })
+      ),
     ].sort(
       (a, b) =>
         new Date(b.created_at).getTime() -
@@ -601,80 +435,44 @@ export default function History() {
     setLoading(false);
   }
 
-  /* =========================================================
-     DOWNLOAD HANDLER
-  ========================================================= */
+  /* ==============================
+     DOWNLOAD
+  ============================== */
 
-  async function handleDownload(item: HistoryItem) {
-
+  async function handleDownload(
+    item: HistoryItem
+  ) {
     setDownloading(item.id);
 
     try {
-
-      /* =========================
-         INTERVIEW
-      ========================= */
-
-      if (item.type === "interview") {
-
-        let parsedQuestions: any;
-
-        try {
-
-          parsedQuestions =
-            typeof item.rawContent === "string"
-              ? JSON.parse(item.rawContent)
-              : item.rawContent;
-
-        } catch (err) {
-
-          toast.error(
-            "Could not parse interview data"
-          );
-
-          return;
-        }
-
-        await downloadInterviewDocx(
-          item.title,
-          JSON.stringify(parsedQuestions)
+      if (item.type === "jd") {
+        await exportMarkdownToDocx(
+          item.rawContent,
+          item.title
         );
 
-        toast.success(
-          "Interview kit downloaded!"
-        );
+        toast.success("JD downloaded!");
       }
 
-      /* =========================
-         TALENT
-      ========================= */
-
       else if (item.type === "talent") {
-
-        let parsedTalent: any;
+        let parsed: any;
 
         try {
-
-          parsedTalent =
-            typeof item.rawContent === "string"
-              ? JSON.parse(item.rawContent)
-              : item.rawContent;
-
-        } catch (err) {
-
+          parsed = JSON.parse(
+            item.rawContent
+          );
+        } catch {
           toast.error(
             "Could not parse talent report"
           );
 
+          setDownloading(null);
           return;
         }
 
         await exportTalentReportToDocx(
-          parsedTalent,
-          `${item.title.replace(
-            /[^a-z0-9]/gi,
-            "-"
-          )}-Talent-Report`
+          parsed,
+          item.title
         );
 
         toast.success(
@@ -682,45 +480,30 @@ export default function History() {
         );
       }
 
-      /* =========================
-         JD
-      ========================= */
-
-      else if (item.type === "jd") {
-
-        await exportMarkdownToDocx(
-          item.rawContent || "",
-          `${item.title.replace(
-            /[^a-z0-9]/gi,
-            "-"
-          )}-JD`
+      else if (
+        item.type === "interview"
+      ) {
+        await downloadInterviewDocx(
+          item.title,
+          item.rawContent
         );
-
-        toast.success("JD downloaded!");
       }
-
-    } catch (e: any) {
-
-      console.error(e);
-
+    } catch (err: any) {
       toast.error(
-        "Download failed: " +
-        (e?.message || "Unknown error")
+        "Download failed"
       );
-
-    } finally {
-
-      setDownloading(null);
-
     }
+
+    setDownloading(null);
   }
 
-  /* =========================================================
+  /* ==============================
      DELETE
-  ========================================================= */
+  ============================== */
 
-  async function deleteItem(item: HistoryItem) {
-
+  async function deleteItem(
+    item: HistoryItem
+  ) {
     const table =
       item.type === "jd"
         ? "jd_history"
@@ -734,16 +517,24 @@ export default function History() {
       .eq("id", item.id);
 
     setItems((prev) =>
-      prev.filter((i) => i.id !== item.id)
+      prev.filter(
+        (i) => i.id !== item.id
+      )
     );
 
     toast.success("Deleted");
   }
 
+  /* ==============================
+     FILTERED
+  ============================== */
+
   const filtered =
     tab === "all"
       ? items
-      : items.filter((i) => i.type === tab);
+      : items.filter(
+          (i) => i.type === tab
+        );
 
   const typeConfig = {
     jd: {
@@ -768,17 +559,21 @@ export default function History() {
     },
   };
 
+  /* ==============================
+     UI
+  ============================== */
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
 
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-3xl font-semibold tracking-tight">
           History
         </h1>
 
         <p className="text-muted-foreground text-sm mt-1">
-          All your generated documents —
-          view, download as .docx, or delete.
+          All generated reports,
+          interview kits and JDs.
         </p>
       </div>
 
@@ -808,7 +603,8 @@ export default function History() {
             Talent (
             {
               items.filter(
-                (i) => i.type === "talent"
+                (i) =>
+                  i.type === "talent"
               ).length
             }
             )
@@ -818,7 +614,8 @@ export default function History() {
             Interview (
             {
               items.filter(
-                (i) => i.type === "interview"
+                (i) =>
+                  i.type === "interview"
               ).length
             }
             )
@@ -829,47 +626,53 @@ export default function History() {
 
       {loading ? (
 
-        <div className="space-y-3">
-          {[1, 2, 3, 4].map((i) => (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-16 bg-secondary rounded-xl animate-pulse"
+              className="h-24 rounded-2xl bg-secondary animate-pulse"
             />
           ))}
         </div>
 
       ) : filtered.length === 0 ? (
 
-        <Card className="p-12 flex flex-col items-center justify-center text-center text-muted-foreground">
+        <Card className="p-14 text-center">
 
-          <Filter className="h-10 w-10 mb-3 opacity-20" />
+          <div className="space-y-3">
 
-          <p className="font-medium">
-            No records found
-          </p>
+            <h3 className="text-lg font-medium">
+              No history found
+            </h3>
 
-          <p className="text-sm mt-1">
-            Start generating to build your history.
-          </p>
+            <p className="text-muted-foreground text-sm">
+              Start generating your
+              first document.
+            </p>
 
-          <Button
-            className="mt-4"
-            onClick={() =>
-              navigate("/app/jd-generator")
-            }
-          >
-            Generate your first JD
-          </Button>
+            <Button
+              onClick={() =>
+                navigate(
+                  "/app/jd-generator"
+                )
+              }
+            >
+              Generate JD
+            </Button>
+
+          </div>
 
         </Card>
 
       ) : (
 
-        <div className="space-y-3">
+        <div className="space-y-4">
 
           {filtered.map((item) => {
 
-            const cfg = typeConfig[item.type];
+            const cfg =
+              typeConfig[item.type];
+
             const Icon = cfg.icon;
 
             const isOpen =
@@ -879,40 +682,43 @@ export default function History() {
               downloading === item.id;
 
             return (
-
               <Card
                 key={item.id}
-                className="overflow-hidden"
+                className="overflow-hidden border"
               >
 
                 <div
-                  className="flex items-center gap-3 p-4 cursor-pointer hover:bg-secondary/40 transition-colors"
+                  className="p-5 flex items-center gap-4 cursor-pointer hover:bg-secondary/30 transition"
                   onClick={() =>
                     setExpanded(
-                      isOpen ? null : item.id
+                      isOpen
+                        ? null
+                        : item.id
                     )
                   }
                 >
 
                   <div
-                    className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${cfg.bg}`}
+                    className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${cfg.bg}`}
                   >
                     <Icon
-                      className={`h-4 w-4 ${cfg.color}`}
+                      className={`h-5 w-5 ${cfg.color}`}
                     />
                   </div>
 
                   <div className="flex-1 min-w-0">
 
-                    <div className="text-sm font-medium truncate">
+                    <div className="font-medium truncate">
                       {item.title}
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
 
                       <Clock className="h-3 w-3" />
 
-                      {timeAgo(item.created_at)}
+                      {timeAgo(
+                        item.created_at
+                      )}
 
                     </div>
 
@@ -920,13 +726,13 @@ export default function History() {
 
                   <Badge
                     variant="outline"
-                    className="text-[10px] shrink-0 capitalize"
+                    className="capitalize"
                   >
                     {cfg.label}
                   </Badge>
 
                   <div
-                    className="flex items-center gap-1 ml-2"
+                    className="flex items-center gap-2"
                     onClick={(e) =>
                       e.stopPropagation()
                     }
@@ -935,55 +741,57 @@ export default function History() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8"
-                      disabled={isDownloading}
+                      disabled={
+                        isDownloading
+                      }
                       onClick={() =>
-                        handleDownload(item)
+                        handleDownload(
+                          item
+                        )
                       }
                     >
-
                       {isDownloading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <Download className="h-4 w-4" />
                       )}
-
                     </Button>
 
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive"
+                      className="text-red-500"
                       onClick={() =>
                         deleteItem(item)
                       }
                     >
-
                       <Trash2 className="h-4 w-4" />
-
                     </Button>
+
+                    {isOpen ? (
+                      <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    )}
 
                   </div>
 
                 </div>
 
-                {isOpen && item.rawContent && (
+                {isOpen && (
+                  <div className="border-t bg-secondary/20 px-5 py-4">
 
-                  <div className="border-t px-4 py-4 bg-secondary/20">
-
-                    <pre className="text-xs text-muted-foreground whitespace-pre-wrap font-sans leading-relaxed max-h-64 overflow-y-auto">
-
+                    <pre className="text-xs whitespace-pre-wrap leading-relaxed overflow-auto max-h-[400px] font-sans text-muted-foreground">
                       {item.rawContent}
-
                     </pre>
 
                   </div>
-
                 )}
 
               </Card>
             );
           })}
+
         </div>
       )}
     </div>
