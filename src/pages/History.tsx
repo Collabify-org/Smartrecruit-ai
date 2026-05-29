@@ -76,9 +76,9 @@ function timeAgo(date: string) {
   const hours = Math.floor(mins / 60);
   const days = Math.floor(hours / 24);
 
-  if (days > 0) return `${days}d ago`;
-  if (hours > 0) return `${hours}h ago`;
-  if (mins > 0) return `${mins}m ago`;
+  if (days > 0) return days + "d ago";
+  if (hours > 0) return hours + "h ago";
+  if (mins > 0) return mins + "m ago";
 
   return "Just now";
 }
@@ -92,6 +92,15 @@ async function downloadInterviewDocx(
   rawJson: string
 ) {
   const NAVY = "0D2B55";
+
+  let result: any;
+
+  try {
+    result = JSON.parse(rawJson);
+  } catch {
+    toast.error("Could not parse interview data");
+    return;
+  }
 
   const headerCell = (text: string) =>
     new TableCell({
@@ -137,22 +146,34 @@ async function downloadInterviewDocx(
     color = "222222"
   ) =>
     new TableCell({
-      children: (items || []).map(
-        (item) =>
-          new Paragraph({
-            bullet: {
-              level: 0,
-            },
+      children:
+        items && items.length > 0
+          ? items.map(
+              (item) =>
+                new Paragraph({
+                  bullet: {
+                    level: 0,
+                  },
 
-            children: [
-              new TextRun({
-                text: item,
-                size: 18,
-                color,
+                  children: [
+                    new TextRun({
+                      text: item,
+                      size: 18,
+                      color,
+                    }),
+                  ],
+                })
+            )
+          : [
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: "-",
+                    size: 18,
+                  }),
+                ],
               }),
             ],
-          })
-      ),
     });
 
   const sectionHeading = (text: string) =>
@@ -174,15 +195,6 @@ async function downloadInterviewDocx(
       ],
     });
 
-  let result: any;
-
-  try {
-    result = JSON.parse(rawJson);
-  } catch {
-    toast.error("Could not parse interview data");
-    return;
-  }
-
   const children: any[] = [];
 
   children.push(
@@ -203,7 +215,7 @@ async function downloadInterviewDocx(
   );
 
   /* ==============================
-     TECHNICAL
+     TECHNICAL QUESTIONS
   ============================== */
 
   children.push(
@@ -228,26 +240,26 @@ async function downloadInterviewDocx(
           ],
         }),
 
-        ...(result.technical || []).map(
+        ...((result.technical || []).map(
           (q: any, i: number) =>
             new TableRow({
               children: [
                 bodyCell((i + 1).toString()),
-                bodyCell(q.question),
-                bodyCell(q.difficulty),
-                bodyCell(q.category),
+                bodyCell(q.question || ""),
+                bodyCell(q.difficulty || ""),
+                bodyCell(q.category || ""),
                 listCell(
                   q.ideal_answer_points || []
                 ),
               ],
             })
-        ),
+        ) as any[]),
       ],
     })
   );
 
   /* ==============================
-     BEHAVIORAL
+     BEHAVIORAL QUESTIONS
   ============================== */
 
   children.push(
@@ -272,13 +284,13 @@ async function downloadInterviewDocx(
           ],
         }),
 
-        ...(result.behavioral || []).map(
+        ...((result.behavioral || []).map(
           (q: any, i: number) =>
             new TableRow({
               children: [
                 bodyCell((i + 1).toString()),
-                bodyCell(q.question),
-                bodyCell(q.competency),
+                bodyCell(q.question || ""),
+                bodyCell(q.competency || ""),
                 listCell(q.star_prompts || []),
                 listCell(
                   q.red_flags || [],
@@ -286,7 +298,7 @@ async function downloadInterviewDocx(
                 ),
               ],
             })
-        ),
+        ) as any[]),
       ],
     })
   );
@@ -404,7 +416,8 @@ export default function History() {
           id: t.id,
           type: "talent" as const,
           title:
-            (t.jd_input ||
+            (
+              t.jd_input ||
               "Talent Report"
             ).slice(0, 60),
           rawContent: t.results || "",
@@ -417,7 +430,8 @@ export default function History() {
           id: i.id,
           type: "interview" as const,
           title:
-            (i.jd_input ||
+            (
+              i.jd_input ||
               "Interview Kit"
             ).slice(0, 60),
           rawContent: i.questions || "",
@@ -488,10 +502,8 @@ export default function History() {
           item.rawContent
         );
       }
-    } catch (err: any) {
-      toast.error(
-        "Download failed"
-      );
+    } catch (err) {
+      toast.error("Download failed");
     }
 
     setDownloading(null);
@@ -526,7 +538,7 @@ export default function History() {
   }
 
   /* ==============================
-     FILTERED
+     FILTER
   ============================== */
 
   const filtered =
@@ -699,10 +711,16 @@ export default function History() {
                 >
 
                   <div
-                    className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${cfg.bg}`}
+                    className={
+                      "h-11 w-11 rounded-xl flex items-center justify-center shrink-0 " +
+                      cfg.bg
+                    }
                   >
                     <Icon
-                      className={`h-5 w-5 ${cfg.color}`}
+                      className={
+                        "h-5 w-5 " +
+                        cfg.color
+                      }
                     />
                   </div>
 
