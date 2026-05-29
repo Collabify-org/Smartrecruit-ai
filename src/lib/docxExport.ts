@@ -324,7 +324,9 @@ export async function exportTalentReportToDocx(
       spacing: {
         after: 350,
       },
-      children: [headingText("TALENT INTELLIGENCE REPORT")],
+      children: [
+        headingText("TALENT INTELLIGENCE REPORT"),
+      ],
     })
   );
 
@@ -332,13 +334,17 @@ export async function exportTalentReportToDocx(
      SEARCH KEYWORDS
   ============================== */
 
-  children.push(sectionHeader("1. TOP SEARCH KEYWORDS"));
+  children.push(
+    sectionHeader("1. TOP SEARCH KEYWORDS")
+  );
 
   if (report?.keywords?.boolean_strings?.length) {
     report.keywords.boolean_strings.forEach(
       (keyword: string, index: number) => {
         children.push(
-         paragraph((index + 1) + ". " + keyword)
+          paragraph(
+            (index + 1) + ". " + keyword
+          )
         );
       }
     );
@@ -347,9 +353,8 @@ export async function exportTalentReportToDocx(
   if (report?.keywords?.skill_keywords?.length) {
     children.push(
       paragraph(
-        `Skill Keywords: ${report.keywords.skill_keywords.join(
-          ", "
-        )}`,
+        "Skill Keywords: " +
+          report.keywords.skill_keywords.join(", "),
         {
           bold: true,
           color: COLORS.NAVY,
@@ -364,7 +369,9 @@ export async function exportTalentReportToDocx(
      SOURCING PLATFORMS
   ============================== */
 
-  children.push(sectionHeader("2. BEST SOURCING PLATFORMS"));
+  children.push(
+    sectionHeader("2. BEST SOURCING PLATFORMS")
+  );
 
   children.push(
     createTable(
@@ -381,7 +388,9 @@ export async function exportTalentReportToDocx(
      SALARY
   ============================== */
 
-  children.push(sectionHeader("3. MARKET SALARY RANGE"));
+  children.push(
+    sectionHeader("3. MARKET SALARY RANGE")
+  );
 
   children.push(
     createTable(
@@ -409,9 +418,10 @@ export async function exportTalentReportToDocx(
 
   children.push(
     paragraph(
-      `Market Trend: ${report?.salary?.trend || "-"} — ${
-        report?.salary?.trend_reason || "-"
-      }`,
+      "Market Trend: " +
+        (report?.salary?.trend || "-") +
+        " — " +
+        (report?.salary?.trend_reason || "-"),
       {
         spacingBefore: 120,
         spacingAfter: 200,
@@ -423,7 +433,9 @@ export async function exportTalentReportToDocx(
      SOURCE COMPANIES
   ============================== */
 
-  children.push(sectionHeader("4. TOP COMPANIES TO SOURCE FROM"));
+  children.push(
+    sectionHeader("4. TOP COMPANIES TO SOURCE FROM")
+  );
 
   children.push(
     createTable(
@@ -442,7 +454,9 @@ export async function exportTalentReportToDocx(
      PERSONA
   ============================== */
 
-  children.push(sectionHeader("5. CANDIDATE PERSONA"));
+  children.push(
+    sectionHeader("5. CANDIDATE PERSONA")
+  );
 
   children.push(
     paragraph("Ideal Background", {
@@ -453,7 +467,9 @@ export async function exportTalentReportToDocx(
   );
 
   children.push(
-    paragraph(report?.candidate_persona?.background || "-")
+    paragraph(
+      report?.candidate_persona?.background || "-"
+    )
   );
 
   children.push(
@@ -465,9 +481,13 @@ export async function exportTalentReportToDocx(
   );
 
   if (report?.candidate_persona?.red_flags?.length) {
-    report.candidate_persona.red_flags.forEach((flag: string) => {
-      children.push(bullet(flag, COLORS.RED));
-    });
+    report.candidate_persona.red_flags.forEach(
+      (flag: string) => {
+        children.push(
+          bullet(flag, COLORS.RED)
+        );
+      }
+    );
   }
 
   children.push(
@@ -480,7 +500,8 @@ export async function exportTalentReportToDocx(
 
   children.push(
     paragraph(
-      report?.candidate_persona?.interview_approach || "-"
+      report?.candidate_persona
+        ?.interview_approach || "-"
     )
   );
 
@@ -488,18 +509,28 @@ export async function exportTalentReportToDocx(
      HIRING COMPANIES
   ============================== */
 
-  children.push(sectionHeader("6. COMPANIES ACTIVELY HIRING"));
+  children.push(
+    sectionHeader("6. COMPANIES ACTIVELY HIRING")
+  );
 
   children.push(
     createTable(
-      ["Company", "Type", "Size", "Industry", "Why Hiring"],
-      (report.hiring_companies || []).map((c: any) => [
-        c.name || "",
-        c.type || "",
-        c.size || "",
-        c.industry || "",
-        c.reason || "",
-      ]),
+      [
+        "Company",
+        "Type",
+        "Size",
+        "Industry",
+        "Why Hiring",
+      ],
+      (report.hiring_companies || []).map(
+        (c: any) => [
+          c.name || "",
+          c.type || "",
+          c.size || "",
+          c.industry || "",
+          c.reason || "",
+        ]
+      ),
       [1800, 1400, 1200, 1500, 3460]
     )
   );
@@ -548,7 +579,6 @@ export async function exportTalentReportToDocx(
     blob,
     filename.endsWith(".docx")
       ? filename
-      : `${filename}.docx`
+      : filename + ".docx"
   );
 }
-```
