@@ -338,7 +338,7 @@ export async function exportTalentReportToDocx(
     report.keywords.boolean_strings.forEach(
       (keyword: string, index: number) => {
         children.push(
-         paragraph(`${index + 1}. ${keyword}`)
+         paragraph((index + 1) + ". " + keyword)
         );
       }
     );
