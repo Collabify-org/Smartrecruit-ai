@@ -654,7 +654,7 @@ function PricingPlans({ primaryCta, primaryCtaLabel }: { primaryCta: string; pri
         <PriceCard
           highlight
           name="Professional"
-          price={fmt("₹3,999", "$99")}
+          price={fmt("₹3,999", "$149")}
           period="/ month"
           desc="For growing companies and active hiring teams"
           features={[
@@ -684,7 +684,6 @@ function PricingPlans({ primaryCta, primaryCtaLabel }: { primaryCta: string; pri
             "Unlimited user seats",
             "Company template upload",
             "White label option",
-            "API access",
             "Dedicated account manager",
             "Custom onboarding",
             "3-day free trial",
