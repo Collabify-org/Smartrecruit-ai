@@ -10,7 +10,7 @@ export default function Privacy() {
 
       <h2 className="text-xl font-semibold mt-8 mb-2">1. Information We Collect</h2>
       <p className="text-gray-600">
-        We may collect account details, usage data, and interaction data to improve our AI services.
+        We may collect account details,  usage data, and interaction data to improve our AI services.
       </p>
 
       <h2 className="text-xl font-semibold mt-8 mb-2">2. How We Use Data</h2>
