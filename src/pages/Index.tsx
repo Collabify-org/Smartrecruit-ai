@@ -342,42 +342,57 @@ export default function Index() {
           </div>
         </section>
 
-        {/* TESTIMONIALS */}
-        <section className="max-w-6xl mx-auto px-6 py-24">
-          <SectionHeader eyebrow="Loved by hiring teams" title="What founders and recruiters say" />
-          <div className="grid md:grid-cols-3 gap-5 mt-10">
-            <Testimonial
-              quote="We replaced three hiring tools with Synlumex. Our JDs went from 4 hours to 4 minutes."
-              name="Sara Linde"
-              role="Head of Talent, Northwind"
-            />
-            <Testimonial
-              quote="The Talent Intelligence Engine paid for itself on day one. Salary data is shockingly accurate."
-              name="Daniel Park"
-              role="Co-founder, Lumen"
-            />
-            <Testimonial
-              quote="Finally a hiring tool that doesn't try to be an ATS. It just makes me faster."
-              name="Mei Cho"
-              role="Founding Recruiter, Vertex"
-            />
-          </div>
+        {/* TRUST + OUTCOMES */}
+<section className="max-w-6xl mx-auto px-6 py-24">
+  <SectionHeader
+    eyebrow="Why teams switch"
+    title="Not another ATS. A hiring acceleration layer."
+    subtitle="Built for speed, clarity, and decision-making — not HR clutter."
+  />
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <TrustBadge icon={Shield} title="Secure payments" desc="Stripe-grade encryption" />
-            <TrustBadge icon={Check} title="GDPR ready" desc="EU-compliant data handling" />
-            <TrustBadge icon={Headphones} title="Fast support" desc="Avg. reply in under 2h" />
-          </div>
-        </section>
+  <div className="grid md:grid-cols-3 gap-5 mt-10">
+    <div className="rounded-2xl border border-border bg-background p-6 shadow-soft-sm">
+      <div className="text-3xl font-semibold text-brand">4h → 4 min</div>
+      <p className="text-sm text-muted-foreground mt-2">
+        Average job description creation time reduced by Synlumex AI.
+      </p>
+    </div>
 
-        {/* PRICING */}
-        <section id="pricing" className="border-t border-border bg-card">
-          <div className="max-w-6xl mx-auto px-6 py-24">
-            <SectionHeader eyebrow="Pricing" title="Simple, transparent pricing" subtitle="Start with a 3-day free trial. No credit card required." />
-            <PricingPlans primaryCta={primaryCta} primaryCtaLabel={primaryCtaLabel} />
-          </div>
-        </section>
+    <div className="rounded-2xl border border-border bg-background p-6 shadow-soft-sm">
+      <div className="text-3xl font-semibold text-brand">10x faster</div>
+      <p className="text-sm text-muted-foreground mt-2">
+        Hiring workflows accelerated across JD, sourcing, and interview prep.
+      </p>
+    </div>
 
+    <div className="rounded-2xl border border-border bg-background p-6 shadow-soft-sm">
+      <div className="text-3xl font-semibold text-brand">1 tool</div>
+      <p className="text-sm text-muted-foreground mt-2">
+        Replace JD writers, salary research tools, and interview prep docs.
+      </p>
+    </div>
+  </div>
+
+  <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <TrustBadge icon={Shield} title="Enterprise-ready security" desc="Encrypted, compliant, audit-safe" />
+    <TrustBadge icon={Check} title="GDPR + SOC-ready structure" desc="Built for global hiring teams" />
+    <TrustBadge icon={Headphones} title="Founder support" desc="Direct response in under 2 hours" />
+  </div>
+</section>
+
+{/* PRICING */}
+<section id="pricing" className="border-t border-border bg-card">
+  <div className="max-w-6xl mx-auto px-6 py-24">
+    <SectionHeader
+      eyebrow="Pricing"
+      title="Simple pricing that scales with hiring volume"
+      subtitle="Start free for 3 days. No credit card required."
+    />
+
+    <PricingPlans primaryCta={primaryCta} primaryCtaLabel={primaryCtaLabel} />
+  </div>
+</section>
+        
         {/* AEO / ANSWER BLOCKS */}
         <section className="max-w-6xl mx-auto px-6 py-24">
           <SectionHeader eyebrow="Answers" title="What is AI-powered hiring, really?" />
