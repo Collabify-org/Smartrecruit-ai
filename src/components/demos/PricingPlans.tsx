@@ -9,13 +9,12 @@ import { Button } from '@/components/ui/button'
 const plans = [
   {
     name: 'Starter',
+    price: 99,
     description: 'For individual recruiters and small HR teams',
-    monthlyPrice: 1999,
-    annualPrice: 1599,
     features: [
-      '10 JD generations/month',
-      '10 Talent Intelligence analyses/month',
-      '10 Interview kits/month',
+      '20 JD generations/month',
+      '20 Talent Intelligence analyses/month',
+      '20 Interview kits/month',
       'Synlumex AI JD format',
       'Download as .docx',
       '1 user seat',
@@ -27,9 +26,8 @@ const plans = [
   },
   {
     name: 'Professional',
+    price: 199,
     description: 'For growing companies and active hiring teams',
-    monthlyPrice: 3999,
-    annualPrice: 3199,
     features: [
       '50 JD generations/month',
       '50 Talent Intelligence analyses/month',
@@ -45,16 +43,16 @@ const plans = [
   },
   {
     name: 'Enterprise',
+    price: null,
     description: 'For large organizations with complex hiring needs',
-    monthlyPrice: null,
-    annualPrice: null,
     features: [
       'Unlimited JD generations',
       'Unlimited Talent Intelligence',
       'Unlimited interview kits',
       'Unlimited users',
-      'Dedicated success manager',
-      'SLA guarantees',
+      'Dedicated onboarding',
+      'Priority support',
+      'Custom pricing',
     ],
     cta: 'Contact Sales',
     popular: false,
@@ -62,12 +60,24 @@ const plans = [
 ]
 
 export default function PricingSection() {
-  const [isAnnual, setIsAnnual] = useState(true)
+  const [isAnnual, setIsAnnual] = useState(false)
   const router = useRouter()
 
   const getPrice = (plan: any) => {
-    if (plan.monthlyPrice === null) return 'Custom'
-    return isAnnual ? plan.annualPrice : plan.monthlyPrice
+    if (!plan.price) return 'Custom'
+
+    const monthly = plan.price
+
+    if (isAnnual) {
+      const discounted = monthly * 12 * 0.85 // 15% discount
+      return Math.round(discounted)
+    }
+
+    return monthly
+  }
+
+  const getBillingLabel = () => {
+    return isAnnual ? '/year' : '/month'
   }
 
   const handleClick = (plan: any) => {
@@ -95,7 +105,7 @@ export default function PricingSection() {
       {/* Toggle */}
       <div className="flex justify-center mb-10">
         <div className="bg-[#F5F7FA] p-1 rounded-full flex">
-          
+
           <button
             onClick={() => setIsAnnual(false)}
             className={`px-6 py-2 rounded-full text-sm ${
@@ -111,7 +121,7 @@ export default function PricingSection() {
               isAnnual ? 'bg-white text-[#081225]' : 'text-[#081225]/60'
             }`}
           >
-            Annual <span className="text-green-600 ml-1">Save 20%</span>
+            Yearly <span className="text-green-600 ml-1">Save 15%</span>
           </button>
 
         </div>
@@ -142,10 +152,11 @@ export default function PricingSection() {
             {/* Price */}
             <div className="mt-6">
               <p className="text-3xl font-bold text-[#081225]">
-                {typeof getPrice(plan) === 'number' && '₹'}
-                {getPrice(plan)}
+                ${getPrice(plan)}
               </p>
-              <p className="text-sm text-[#081225]/60">/ month</p>
+              <p className="text-sm text-[#081225]/60">
+                {getBillingLabel()}
+              </p>
             </div>
 
             {/* Features */}
