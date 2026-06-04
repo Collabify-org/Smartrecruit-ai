@@ -4,12 +4,23 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Brain, Loader2, Copy, Download } from "lucide-react";
+import { Brain, Loader2, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { exportTalentReportToDocx } from "@/lib/docxExport";
 
 const NAVY = "#0D2B55";
 const LIGHT_BLUE = "#E8F0FA";
+
+const countryFlag: Record<string, string> = {
+  UAE: "🇦🇪", India: "🇮🇳", USA: "🇺🇸", UK: "🇬🇧",
+  Canada: "🇨🇦", Australia: "🇦🇺", Singapore: "🇸🇬", Other: "🌍",
+};
+
+const industryIcon: Record<string, string> = {
+  Technology: "💻", "Oil & Gas": "🛢️", "EPC & Construction": "🏗️",
+  Manufacturing: "🏭", Healthcare: "🏥", Finance: "💰",
+  Retail: "🛒", Logistics: "🚚", Education: "🎓", Energy: "⚡", Other: "🏢",
+};
 
 export default function TalentIntelligence() {
   const [jd, setJd] = useState("");
@@ -38,40 +49,34 @@ export default function TalentIntelligence() {
     toast.success("Word file downloaded!");
   };
 
-  const buildPlainText = (r: any) => {
-    let text = "TALENT INTELLIGENCE REPORT\n\n";
-    text += "1. TOP SEARCH KEYWORDS\n";
-    r.keywords?.boolean_strings?.forEach((s: string, i: number) => { text += `${i+1}. ${s}\n`; });
-    text += "\nSKILL KEYWORDS: " + r.keywords?.skill_keywords?.join(", ") + "\n\n";
-    text += "2. BEST SOURCING PLATFORMS\n";
-    r.platforms?.forEach((p: any) => { text += `${p.name}: ${p.reason}\n`; });
-    text += "\n3. MARKET SALARY RANGE\n";
-    text += `India - Entry: ${r.salary?.india?.entry} | Mid: ${r.salary?.india?.mid} | Senior: ${r.salary?.india?.senior}\n`;
-    text += `International - Entry: ${r.international?.entry} | Mid: ${r.salary?.international?.mid} | Senior: ${r.salary?.international?.senior}\n`;
-    text += `Trend: ${r.salary?.trend} - ${r.salary?.trend_reason}\n\n`;
-    text += "4. TOP COMPANIES TO SOURCE FROM\n";
-    r.source_companies?.forEach((c: any) => { text += `${c.name} (${c.type}, ${c.size}): ${c.reason}\n`; });
-    text += "\n5. CANDIDATE PERSONA\n";
-    text += `Background: ${r.candidate_persona?.background}\n`;
-    text += `Red Flags: ${r.candidate_persona?.red_flags?.join(", ")}\n`;
-    text += `Interview Approach: ${r.candidate_persona?.interview_approach}\n\n`;
-    text += "6. COMPANIES ACTIVELY HIRING\n";
-    r.hiring_companies?.forEach((c: any) => { text += `${c.name} (${c.type}, ${c.size}, ${c.industry}): ${c.reason}\n`; });
-    return text;
-  };
-
   const SectionHeader = ({ title }: { title: string }) => (
     <div style={{ backgroundColor: NAVY }} className="px-4 py-3 rounded-t-lg">
       <h3 className="text-white font-bold text-sm">{title}</h3>
     </div>
   );
 
+  // Use detected salary label from report or fallback
+  const localLabel = report?.salary?.salary_label || report?.salary_label || "Local Salary";
+  const detectedCountry = report?.detected_country || "";
+  const detectedIndustry = report?.detected_industry || "";
+  const detectedRole = report?.detected_role || "";
+  const detectedSeniority = report?.detected_seniority || "";
+
   return (
     <>
-      <PageHeader title="Talent Intelligence" description="Decode the hiring market for any role — keywords, platforms, salary, and sourcing companies." />
+      <PageHeader
+        title="Talent Intelligence"
+        description="Paste any JD — get country-specific salary ranges, sourcing platforms, companies, and candidate insights."
+      />
 
       <Card className="p-5 shadow-soft-sm mb-6">
-        <Textarea value={jd} onChange={(e) => setJd(e.target.value)} placeholder="Paste a job description here…" rows={6} className="text-sm" />
+        <Textarea
+          value={jd}
+          onChange={(e) => setJd(e.target.value)}
+          placeholder="Paste a job description here — country and industry will be auto-detected…"
+          rows={6}
+          className="text-sm"
+        />
         <div className="flex items-center justify-between mt-3">
           <p className="text-xs text-muted-foreground">{jd.length} characters</p>
           <Button onClick={run} disabled={loading} className="bg-gradient-brand text-brand-foreground hover:opacity-95">
@@ -84,13 +89,39 @@ export default function TalentIntelligence() {
         <Card className="p-12 text-center border-2 border-dashed shadow-none bg-transparent">
           <Brain className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
           <p className="text-sm text-muted-foreground">Paste a JD and click Analyze to see market insights.</p>
+          <p className="text-xs text-muted-foreground mt-1">Country and industry are auto-detected from your JD.</p>
         </Card>
       )}
 
       {report && (
         <div className="space-y-5">
-          <div className="flex justify-between items-center">
-            <h2 className="font-bold text-lg" style={{ color: NAVY }}>Talent Intelligence Report</h2>
+          {/* Header + detected badges */}
+          <div className="flex flex-wrap justify-between items-start gap-3">
+            <div>
+              <h2 className="font-bold text-lg" style={{ color: NAVY }}>Talent Intelligence Report</h2>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {detectedCountry && (
+                  <span className="text-xs px-3 py-1 rounded-full font-medium text-white" style={{ backgroundColor: NAVY }}>
+                    {countryFlag[detectedCountry] || "🌍"} {detectedCountry}
+                  </span>
+                )}
+                {detectedIndustry && (
+                  <span className="text-xs px-3 py-1 rounded-full font-medium text-white" style={{ backgroundColor: "#1a4a7a" }}>
+                    {industryIcon[detectedIndustry] || "🏢"} {detectedIndustry}
+                  </span>
+                )}
+                {detectedRole && (
+                  <span className="text-xs px-3 py-1 rounded-full font-medium bg-gray-100 text-gray-700">
+                    {detectedRole}
+                  </span>
+                )}
+                {detectedSeniority && (
+                  <span className="text-xs px-3 py-1 rounded-full font-medium bg-gray-100 text-gray-700">
+                    {detectedSeniority}
+                  </span>
+                )}
+              </div>
+            </div>
             <Button size="sm" onClick={downloadDocx}>
               <Download className="h-4 w-4 mr-1.5" /> Download
             </Button>
@@ -103,7 +134,7 @@ export default function TalentIntelligence() {
               <div className="grid grid-cols-1 gap-2 mb-3">
                 {report.keywords?.boolean_strings?.map((s: string, i: number) => (
                   <div key={i} className="bg-white rounded p-2 text-xs font-mono border border-blue-100">
-                    {i+1}. {s}
+                    {i + 1}. {s}
                   </div>
                 ))}
               </div>
@@ -122,8 +153,9 @@ export default function TalentIntelligence() {
               <table className="w-full text-sm">
                 <thead>
                   <tr style={{ backgroundColor: NAVY }}>
-                    <th className="text-white text-left p-2 rounded-tl">Platform</th>
-                    <th className="text-white text-left p-2 rounded-tr">Why Best for This Role</th>
+                    <th className="text-white text-left p-2">Platform</th>
+                    <th className="text-white text-left p-2">Why Best for This Role</th>
+                    <th className="text-white text-left p-2">Search Tip</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -131,6 +163,7 @@ export default function TalentIntelligence() {
                     <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
                       <td className="p-2 font-semibold text-xs" style={{ color: NAVY }}>{p.name}</td>
                       <td className="p-2 text-xs text-gray-600">{p.reason}</td>
+                      <td className="p-2 text-xs text-gray-500 italic">{p.search_tip}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -146,7 +179,7 @@ export default function TalentIntelligence() {
                 <thead>
                   <tr style={{ backgroundColor: NAVY }}>
                     <th className="text-white text-left p-2">Level</th>
-                    <th className="text-white text-left p-2">India (LPA)</th>
+                    <th className="text-white text-left p-2">{localLabel}</th>
                     <th className="text-white text-left p-2">International (USD)</th>
                   </tr>
                 </thead>
@@ -154,15 +187,17 @@ export default function TalentIntelligence() {
                   {["entry", "mid", "senior"].map((level, i) => (
                     <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
                       <td className="p-2 font-semibold text-xs capitalize" style={{ color: NAVY }}>{level}</td>
-                      <td className="p-2 text-xs">{report.salary?.india?.[level]}</td>
-                      <td className="p-2 text-xs">{report.salary?.international?.[level]}</td>
+                      <td className="p-2 text-xs font-medium">{report.salary?.local?.[level]}</td>
+                      <td className="p-2 text-xs text-gray-500">{report.salary?.international?.[level]}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               <div className="bg-white rounded p-3 text-xs">
                 <span className="font-semibold" style={{ color: NAVY }}>Market Trend: </span>
-                <span className="capitalize font-bold" style={{ color: report.salary?.trend === "rising" ? "green" : report.salary?.trend === "declining" ? "red" : "orange" }}>
+                <span className="capitalize font-bold" style={{
+                  color: report.salary?.trend === "rising" ? "green" : report.salary?.trend === "declining" ? "red" : "orange"
+                }}>
                   {report.salary?.trend}
                 </span>
                 {" — "}{report.salary?.trend_reason}
