@@ -2,8 +2,8 @@
 // Uses pdfjs-dist in the browser and mammoth for DOCX.
 
 import * as pdfjsLib from "pdfjs-dist";
-// Vite worker bundling:
-// @ts-expect-error Vite resolves the ?url import at build time
+// Vite worker bundling — `?url` is resolved at build time.
+// @ts-ignore Vite-specific import suffix
 import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 (pdfjsLib as any).GlobalWorkerOptions.workerSrc = pdfWorker;
