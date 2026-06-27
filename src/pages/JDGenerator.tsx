@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Copy, Download, Sparkles, Upload, FileText, Loader2, CheckCheck, Wand2 } from "lucide-react";
+import { Copy, Download, Sparkles, Loader2, Wand2, CheckCheck } from "lucide-react";
 import { exportMarkdownToDocx } from "@/lib/docxExport";
 import { type JDInput } from "@/lib/jdGenerator";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,8 +24,7 @@ import { identifyFromJD } from "@/lib/intelligence/aiMockService";
 import type { ExtractedJD } from "@/lib/intelligence/documentExtractor";
 
 export default function JDGenerator() {
-  const [mode, setMode] = useState<"smartrecruit" | "template" | "upload">("smartrecruit");
-  const [template, setTemplate] = useState(() => lsGet<string>("template", ""));
+  const [mode, setMode] = useState<"smartrecruit" | "upload">("smartrecruit");
   const [input, setInput] = useState<JDInput>({
     role: "",
     experience: "",
@@ -45,9 +44,6 @@ export default function JDGenerator() {
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => { lsSet("template", template); }, [template]);
 
   // Sync skills list <-> CSV input (backend expects CSV)
   useEffect(() => {
@@ -72,12 +68,6 @@ export default function JDGenerator() {
     []
   );
 
-  const onUpload = async (file: File) => {
-    const text = await file.text();
-    setTemplate(text);
-    toast.success("Template uploaded");
-  };
-
   const onJDParsed = async (data: ExtractedJD) => {
     setExtractedSource(data);
     const ai = await identifyFromJD(data.rawText);
@@ -101,12 +91,8 @@ export default function JDGenerator() {
       toast.error("Please enter at least Role and Company");
       return;
     }
-    if (mode === "template" && !template.trim()) {
-      toast.error("Upload or paste a template first");
-      return;
-    }
     setLoading(true);
-    const apiMode: "smartrecruit" | "template" = mode === "template" ? "template" : "smartrecruit";
+    const apiMode: "smartrecruit" = "smartrecruit";
     const { data, error } = await supabase.functions.invoke("generate-jd", {
       body: {
         roleName: input.role,
@@ -120,7 +106,6 @@ export default function JDGenerator() {
         hiringType: input.hiringType,
         benefits: input.benefits,
         mode: apiMode,
-        template,
         sourceJD: extractedSource?.rawText || undefined,
       },
     });
@@ -154,7 +139,6 @@ export default function JDGenerator() {
         <TabsList className="bg-secondary">
           <TabsTrigger value="upload" className="gap-2"><Wand2 className="h-4 w-4" />Smart Upload</TabsTrigger>
           <TabsTrigger value="smartrecruit" className="gap-2"><Sparkles className="h-4 w-4" />SmartRecruit Format</TabsTrigger>
-          <TabsTrigger value="template" className="gap-2"><FileText className="h-4 w-4" />Company Template</TabsTrigger>
         </TabsList>
 
         <TabsContent value="upload" className="mt-4">
@@ -166,33 +150,6 @@ export default function JDGenerator() {
               </p>
             </div>
             <DocumentUploader onParsed={onJDParsed} />
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="template" className="mt-4">
-          <Card className="p-5 shadow-soft-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <Label className="font-medium">Your company JD template</Label>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Use placeholders: {"{role}"}, {"{company}"}, {"{experience}"}, {"{skills}"}, {"{workMode}"}, {"{country}"}, {"{industry}"}, {"{seniority}"}, {"{hiringType}"}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <input ref={fileRef} type="file" accept=".txt,.md" hidden onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])} />
-                <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
-                  <Upload className="h-4 w-4 mr-1.5" /> Upload
-                </Button>
-              </div>
-            </div>
-            <Textarea
-              value={template}
-              onChange={(e) => setTemplate(e.target.value)}
-              placeholder="Paste your company's JD template here."
-              rows={8}
-              className="font-mono text-sm"
-            />
-            {template && <p className="text-xs text-success mt-2 flex items-center gap-1"><CheckCheck className="h-3.5 w-3.5" /> Template saved locally</p>}
           </Card>
         </TabsContent>
       </Tabs>
