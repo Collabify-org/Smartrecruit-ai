@@ -116,6 +116,15 @@ export default function JDGenerator() {
     }
     setOutput((data as any).jd);
     toast.success("JD generated");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("jd_history").insert({
+        user_id: user.id,
+        role_name: input.role,
+        content: (data as any).jd,
+        mode: apiMode,
+      });
+    }
   };
 
   const copy = async () => {

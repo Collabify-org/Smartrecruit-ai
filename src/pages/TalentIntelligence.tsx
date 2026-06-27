@@ -41,6 +41,14 @@ export default function TalentIntelligence() {
     }
     setReport((data as any).result);
     toast.success("Analysis complete");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("talent_history").insert({
+        user_id: user.id,
+        jd_input: jd,
+        results: JSON.stringify((data as any).result),
+      });
+    }
   };
 
   const downloadDocx = async () => {

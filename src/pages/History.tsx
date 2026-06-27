@@ -351,6 +351,19 @@ export default function History() {
 
   useEffect(() => {
     fetchHistory();
+    let scheduled = false;
+    const refresh = () => {
+      if (scheduled) return;
+      scheduled = true;
+      setTimeout(() => { scheduled = false; fetchHistory(); }, 250);
+    };
+    const channel = supabase
+      .channel("history-sync")
+      .on("postgres_changes", { event: "*", schema: "public", table: "jd_history" }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "talent_history" }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "interview_history" }, refresh)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   async function fetchHistory() {

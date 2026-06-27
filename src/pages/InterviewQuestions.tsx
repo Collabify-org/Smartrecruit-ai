@@ -35,6 +35,14 @@ export default function InterviewQuestions() {
     setResult((data as any).result);
     setActiveTab("technical");
     toast.success("Interview questions ready!");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("interview_history").insert({
+        user_id: user.id,
+        jd_input: jd,
+        questions: JSON.stringify((data as any).result),
+      });
+    }
   };
 
   const NAVY = "1a3a5c";
