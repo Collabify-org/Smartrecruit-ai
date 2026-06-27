@@ -53,13 +53,23 @@ export default function Dashboard() {
     if (!authUser) { setLoading(false); return; }
 
     const [usageRes, jdRes, talentRes, interviewRes] = await Promise.all([
-      supabase.from("usage").select("*").eq("user_id", authUser.id).single(),
+      supabase.from("profiles").select("plan, usage_jd, usage_interview, usage_talent").eq("id", authUser.id).single(),
       supabase.from("jd_history").select("id, role_name, created_at").eq("user_id", authUser.id).order("created_at", { ascending: false }).limit(3),
       supabase.from("talent_history").select("id, jd_input, created_at").eq("user_id", authUser.id).order("created_at", { ascending: false }).limit(3),
       supabase.from("interview_history").select("id, jd_input, created_at").eq("user_id", authUser.id).order("created_at", { ascending: false }).limit(3),
     ]);
 
-    if (usageRes.data) setStats(usageRes.data as UsageStat);
+    if (usageRes.data) {
+      const p: any = usageRes.data;
+      const limits: Record<string, number> = { free: 3, trial: 3, starter: 10, professional: 50, enterprise: 9999 };
+      const limit = limits[p.plan] ?? 3;
+      setStats({
+        plan: p.plan,
+        jds_used: p.usage_jd ?? 0, jds_limit: limit,
+        talent_used: p.usage_talent ?? 0, talent_limit: limit,
+        interview_used: p.usage_interview ?? 0, interview_limit: limit,
+      });
+    }
 
     const recentItems: RecentItem[] = [
       ...(jdRes.data || []).map((j: any) => ({ id: j.id, type: "jd" as const, title: j.role_name || "Untitled JD", created_at: j.created_at })),

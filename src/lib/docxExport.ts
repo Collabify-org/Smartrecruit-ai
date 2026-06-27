@@ -3,7 +3,6 @@ import {
   BorderStyle,
   Document,
   Footer,
-  ISectionChild,
   Packer,
   PageNumber,
   Paragraph,
@@ -396,7 +395,7 @@ export async function exportTalentReportToDocx(
   report: any,
   filename: string
 ) {
-  const children: ISectionChild[] = [];
+  const children: any[] = [];
 
   children.push(
     new Paragraph({

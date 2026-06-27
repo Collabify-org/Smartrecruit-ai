@@ -84,9 +84,14 @@ export type Database = {
       profiles: {
         Row: {
           billing_date: string | null
+          company_name: string | null
           created_at: string
           email: string | null
+          full_name: string | null
           id: string
+          notif_billing: boolean
+          notif_product: boolean
+          notif_weekly: boolean
           plan: string
           trial_expires_at: string | null
           usage_interview: number
@@ -95,9 +100,14 @@ export type Database = {
         }
         Insert: {
           billing_date?: string | null
+          company_name?: string | null
           created_at?: string
           email?: string | null
+          full_name?: string | null
           id: string
+          notif_billing?: boolean
+          notif_product?: boolean
+          notif_weekly?: boolean
           plan?: string
           trial_expires_at?: string | null
           usage_interview?: number
@@ -106,9 +116,14 @@ export type Database = {
         }
         Update: {
           billing_date?: string | null
+          company_name?: string | null
           created_at?: string
           email?: string | null
+          full_name?: string | null
           id?: string
+          notif_billing?: boolean
+          notif_product?: boolean
+          notif_weekly?: boolean
           plan?: string
           trial_expires_at?: string | null
           usage_interview?: number
