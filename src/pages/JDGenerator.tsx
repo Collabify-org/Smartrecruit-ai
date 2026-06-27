@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Copy, Download, Sparkles, Loader2, Wand2 } from "lucide-react";
+import { Copy, Download, Sparkles, Loader2, Wand2, CheckCheck } from "lucide-react";
 import { exportMarkdownToDocx } from "@/lib/docxExport";
 import { type JDInput } from "@/lib/jdGenerator";
 import { supabase } from "@/integrations/supabase/client";
