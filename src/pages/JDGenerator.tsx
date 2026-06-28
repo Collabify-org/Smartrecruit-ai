@@ -60,13 +60,18 @@ export default function JDGenerator() {
       suggestRoles(q, 10).map((r) => ({ value: r.title, label: r.title, sub: r.department })),
     []
   );
-  const companyFetcher = useMemo(
-    () => async (q: string): Promise<AutocompleteItem[]> => {
-      const res = await searchCompaniesAI(q, 10);
-      return res.map((c) => ({ value: c.name, label: c.name, sub: c.industry }));
-    },
-    []
-  );
+  const companyFetcher = useMemo(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    return (q: string): Promise<AutocompleteItem[]> => {
+      if (timer) clearTimeout(timer);
+      return new Promise((resolve) => {
+        timer = setTimeout(async () => {
+          const res = await searchCompaniesAI(q, 10);
+          resolve(res.map((c) => ({ value: c.name, label: c.name, sub: c.industry })));
+        }, 300);
+      });
+    };
+  }, []);
 
   const onJDParsed = async (data: ExtractedJD) => {
     setExtractedSource(data);
