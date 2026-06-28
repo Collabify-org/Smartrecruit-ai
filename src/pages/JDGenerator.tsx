@@ -19,7 +19,7 @@ import { SkillRecommender } from "@/components/intelligence/SkillRecommender";
 import { DocumentUploader } from "@/components/intelligence/DocumentUploader";
 import { HiringInsightsPanel } from "@/components/intelligence/HiringInsightsPanel";
 import { suggestRoles } from "@/lib/intelligence/roles";
-import { searchCompanies } from "@/lib/intelligence/companies";
+import { searchCompaniesAI } from "@/lib/intelligence/companies";
 import { identifyFromJD } from "@/lib/intelligence/aiMockService";
 import type { ExtractedJD } from "@/lib/intelligence/documentExtractor";
 
@@ -62,7 +62,7 @@ export default function JDGenerator() {
   );
   const companyFetcher = useMemo(
     () => async (q: string): Promise<AutocompleteItem[]> => {
-      const res = await searchCompanies(q, 10);
+      const res = await searchCompaniesAI(q, 10);
       return res.map((c) => ({ value: c.name, label: c.name, sub: c.industry }));
     },
     []

@@ -161,6 +161,11 @@ function buildPrompt(params: {
     ? `BENEFITS:\n• ${benefits.split(",").map((b) => b.trim()).join("\n• ")}`
     : "";
 
+  const companyStyleNote = companyName?.trim()
+    ? `COMPANY STYLE — ${companyName}:
+Write this Job Description in the style and tone that ${companyName} would use — match their culture, formality level, and typical hiring language. If ${companyName} is a well-known company, mirror their known voice (e.g. Google = clear & ambitious, Stripe = precise & technical, Razorpay = builder-energy & crisp, Zomato = playful & bold, ADNOC = formal & structured). If unknown or a startup, infer style from the company type — startups: casual, bold, mission-driven; enterprises: formal, structured, compliance-aware; D2C/consumer brands: warm, vivid, customer-led. Never name or describe the company in the output — only let the tone reflect it.`
+    : "";
+
   return `You are a senior recruitment consultant writing a job description for a professional hiring platform. Your output must read like it was written by an experienced recruiter — direct, specific, and market-aware. Never sound like an AI assistant.
 
 ABSOLUTE RULES:
@@ -180,6 +185,8 @@ ${countryNote}
 
 INDUSTRY CONTEXT — ${industry}:
 ${industryNote}
+
+${companyStyleNote}
 
 ROLE INPUT:
 Role: ${roleName}
