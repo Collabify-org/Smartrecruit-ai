@@ -110,3 +110,51 @@ export function setCompanyProvider(p: CompanyProvider) { activeProvider = p; }
 export async function searchCompanies(query: string, limit = 10) {
   return activeProvider.search(query, limit);
 }
+
+// ── AI-powered suggestions via Lovable AI (edge function: company-suggest) ─────
+import { supabase } from "@/integrations/supabase/client";
+
+const aiCache = new Map<string, Company[]>();
+const inflight = new Map<string, Promise<Company[]>>();
+
+export async function searchCompaniesAI(query: string, limit = 10): Promise<Company[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  const key = q.toLowerCase();
+  if (aiCache.has(key)) return aiCache.get(key)!.slice(0, limit);
+  if (inflight.has(key)) return inflight.get(key)!.then((r) => r.slice(0, limit));
+
+  const p = (async (): Promise<Company[]> => {
+    try {
+      const { data, error } = await supabase.functions.invoke("company-suggest", {
+        body: { query: q },
+      });
+      if (error) throw error;
+      const names: string[] = Array.isArray((data as any)?.suggestions)
+        ? (data as any).suggestions
+        : [];
+      const aiResults: Company[] = names.map((n) => ({ name: n }));
+      // Merge with any local matches for redundancy (de-dupe by lowercased name)
+      const local = await localCompanyProvider.search(q, 5);
+      const seen = new Set<string>();
+      const merged: Company[] = [];
+      for (const c of [...aiResults, ...local]) {
+        const k = c.name.toLowerCase();
+        if (seen.has(k)) continue;
+        seen.add(k);
+        merged.push(c);
+      }
+      aiCache.set(key, merged);
+      return merged;
+    } catch (e) {
+      // Fallback to local fuzzy search on any failure
+      const local = await localCompanyProvider.search(q, limit);
+      return local;
+    } finally {
+      inflight.delete(key);
+    }
+  })();
+
+  inflight.set(key, p);
+  return p.then((r) => r.slice(0, limit));
+}
