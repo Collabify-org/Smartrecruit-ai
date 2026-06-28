@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -24,39 +24,33 @@ Deno.serve(async (req) => {
     const q = String(query || "").trim();
     if (q.length < 2) return json({ suggestions: [] });
 
-    if (!LOVABLE_API_KEY) {
-      return json({ suggestions: [], pending: "LOVABLE_API_KEY not configured" });
+    if (!GEMINI_API_KEY) {
+      return json({ suggestions: [], pending: "GEMINI_API_KEY not configured" });
     }
 
-    const prompt = `User typed: "${q}". Suggest 8-10 real company names that match — include Indian startups, global SaaS companies, Gulf/GCC firms, D2C brands, mid-market enterprises, and not just Fortune 500 / top IT firms. Return ONLY a JSON array of company name strings, no commentary. Example: ["Razorpay","Careem","Notion"]`;
+    const prompt = `Give me 10 company names that start with "${q}". Include Indian startups, Indian enterprises, global SaaS, Gulf/GCC firms, D2C brands. No big-brand bias. Return only a valid JSON array of strings, nothing else.`;
 
-    const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Lovable-API-Key": LOVABLE_API_KEY,
-        "X-Lovable-AIG-SDK": "vercel-ai-sdk",
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.4, responseMimeType: "application/json" },
+        }),
       },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: "You are a company-name autocomplete engine. Output strictly a JSON array of strings." },
-          { role: "user", content: prompt },
-        ],
-        temperature: 0.4,
-      }),
-    });
+    );
 
     if (!r.ok) {
       const txt = await r.text().catch(() => "");
-      console.warn("company-suggest gateway error", r.status, txt);
+      console.warn("company-suggest gemini error", r.status, txt);
       if (r.status === 429) return json({ suggestions: [], error: "Rate limited, try again shortly." }, 200);
-      if (r.status === 402) return json({ suggestions: [], error: "AI credits exhausted." }, 200);
       return json({ suggestions: [] });
     }
 
     const d = await r.json();
-    const content: string = d.choices?.[0]?.message?.content ?? "";
+    const content: string = d.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
     const match = content.match(/\[[\s\S]*\]/);
     let names: string[] = [];
     if (match) {
